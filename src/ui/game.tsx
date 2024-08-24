@@ -8,18 +8,24 @@ import { Controller } from "./controller"
 export const Game = () => {
   const boardRef = useRef<HTMLDivElement>(null)
 
+  const [points, setPoints] = useState(0)
   const [isDead, setIsDead] = useState(false)
 
   const controllerPosition = useControllerPosition({
     board: boardRef.current,
-    isDead: isDead,
+    isDead,
   })
 
-  const ballPosition = useBallPosition({
-    board: boardRef.current,
-    controllerPosition,
-    isDead: isDead,
-  })
+  const [ballPosition] = useBallPosition(
+    {
+      board: boardRef.current,
+      controllerPosition,
+      isDead,
+    },
+    () => {
+      setPoints((points) => points + 1)
+    }
+  )
 
   useDeath({ board: boardRef.current, ballPosition }, (val) => {
     if (val !== isDead) setIsDead(val)
@@ -27,6 +33,7 @@ export const Game = () => {
 
   return (
     <div ref={boardRef} className="relative w-screen h-screen">
+      <div className="absolute">{points}</div>
       <div
         className="absolute"
         style={{

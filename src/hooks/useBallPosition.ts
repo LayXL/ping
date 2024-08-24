@@ -2,22 +2,29 @@ import { useEffect, useState } from "react"
 import { gameConfig } from "../config"
 import { useInterval } from "./useInterval"
 
-export const useBallPosition = ({
-  board,
-  controllerPosition,
-  isDead,
-}: {
-  board: HTMLDivElement | null
-  controllerPosition: number
-  isDead: boolean
-}) => {
+export const useBallPosition = (
+  {
+    board,
+    controllerPosition,
+    isDead,
+  }: {
+    board: HTMLDivElement | null
+    controllerPosition: number
+    isDead: boolean
+  },
+  onBounceHandler: () => void
+) => {
   const [xVelocity, setXVelocity] = useState(gameConfig.ballSpeed as number)
   const [yVelocity, setYVelocity] = useState(gameConfig.ballSpeed as number)
 
   const [x, setX] = useState(0)
   const [y, setY] = useState(0)
 
+  const [isOverlapping, setIsOverlapping] = useState(false)
+
   useEffect(() => {
+    if (!board?.clientHeight) return
+
     const ballRect = {
       left: x,
       right: x + gameConfig.ballSize,
@@ -29,7 +36,7 @@ export const useBallPosition = ({
       left: controllerPosition,
       right: controllerPosition + gameConfig.controllerSize,
       top:
-        (board?.clientHeight ?? 0) -
+        board.clientHeight -
         gameConfig.controllerHeight -
         gameConfig.controllerOffset,
       bottom: (board?.clientHeight ?? 0) - gameConfig.controllerOffset,
@@ -44,7 +51,13 @@ export const useBallPosition = ({
     if (isOverlapping) {
       setYVelocity((yVelocity) => -yVelocity)
     }
+
+    setIsOverlapping(isOverlapping)
   }, [x, y, controllerPosition, board?.clientHeight])
+
+  useEffect(() => {
+    if (isOverlapping) onBounceHandler()
+  }, [isOverlapping])
 
   useInterval(() => {
     if (isDead) return
@@ -78,5 +91,13 @@ export const useBallPosition = ({
     })
   }, 1000 / 60)
 
-  return { x, y }
+  return [
+    { x, y },
+    (x: number, y: number, xVelocity?: number, yVelocity?: number) => {
+      setX(x)
+      setY(y)
+      if (xVelocity) setXVelocity(xVelocity)
+      if (yVelocity) setYVelocity(yVelocity)
+    },
+  ] as const
 }
