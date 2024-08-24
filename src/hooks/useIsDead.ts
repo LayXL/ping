@@ -15,7 +15,7 @@ export const useDeath = (
 
   const safeZone = board?.clientHeight
     ? board.clientHeight -
-      gameConfig.controllerHeight -
+      gameConfig.controllerHeight / 2 -
       gameConfig.controllerOffset
     : Number.MAX_SAFE_INTEGER
 

@@ -34,6 +34,14 @@ export const Game = () => {
   return (
     <div ref={boardRef} className="relative w-screen h-screen">
       <div className="absolute">{points}</div>
+
+      <div className="absolute top-4">
+        <p>
+          ball: {ballPosition.x}, {ballPosition.y}
+        </p>
+        <p>platform: {controllerPosition}</p>
+      </div>
+
       <div
         className="absolute"
         style={{

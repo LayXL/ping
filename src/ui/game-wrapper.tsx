@@ -10,7 +10,7 @@ export const GameWrapper = () => {
 
   return (
     <div className="relative">
-      <div className="absolute right-0" onClick={onReset}>
+      <div className="absolute right-0 z-10" onClick={onReset}>
         Reset
       </div>
       <Game key={key} />
