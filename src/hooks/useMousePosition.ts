@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { isMobile } from "react-device-detect"
 
 type MousePosition = {
   x: number | null
@@ -6,21 +7,60 @@ type MousePosition = {
 }
 
 export const useMousePosition = (isStopUpdate = false) => {
-  const [pos, setPos] = useState<MousePosition>({ x: null, y: null })
+  const [pos, setPos] = useState<MousePosition>({ x: 0, y: 0 })
+
+  const [initialPos, setInitialPos] = useState<MousePosition>({
+    x: null,
+    y: null,
+  })
+  const [startPos, setStartPos] = useState<MousePosition>({ x: 0, y: 0 })
 
   useEffect(() => {
     const updateMousePosition = (ev: MouseEvent) => {
-      if (isStopUpdate) return
-
       setPos({ x: ev.clientX, y: ev.clientY })
     }
 
-    if (!isStopUpdate) window.addEventListener("mousemove", updateMousePosition)
+    const updateStartPosition = (ev: PointerEvent) => {
+      setStartPos({ x: ev.clientX, y: ev.clientY })
+      setInitialPos(pos)
+    }
+
+    const updateTouchPosition = (ev: PointerEvent) => {
+      if (
+        initialPos.x === null ||
+        startPos.x === null ||
+        initialPos.y === null ||
+        startPos.y === null
+      )
+        return
+
+      const deltaX = ev.clientX - startPos.x
+      const deltaY = ev.clientY - startPos.y
+
+      const x = initialPos.x + deltaX
+      const y = initialPos.y + deltaY
+
+      setPos({ x, y })
+    }
+
+    if (!isStopUpdate) {
+      if (!isMobile) {
+        window.addEventListener("mousemove", updateMousePosition)
+      } else {
+        window.addEventListener("pointerdown", updateStartPosition)
+        window.addEventListener("pointermove", updateTouchPosition)
+      }
+    }
 
     return () => {
-      window.removeEventListener("mousemove", updateMousePosition)
+      if (!isMobile) {
+        window.removeEventListener("mousemove", updateMousePosition)
+      } else {
+        window.removeEventListener("pointerdown", updateStartPosition)
+        window.removeEventListener("pointermove", updateTouchPosition)
+      }
     }
-  }, [isStopUpdate])
+  }, [initialPos.x, initialPos.y, isStopUpdate, pos, startPos.x, startPos.y])
 
   return pos
 }

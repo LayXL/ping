@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react"
+import { useScrollLock } from "usehooks-ts"
 import { gameConfig } from "../config"
 import { useBallPosition } from "../hooks/useBallPosition"
 import { useControllerPosition } from "../hooks/useControllerPosition"
@@ -42,8 +43,10 @@ export const Game = () => {
     if (val !== isDead) setIsDead(val)
   })
 
+  useScrollLock()
+
   return (
-    <div ref={boardRef} className="relative w-screen h-screen">
+    <div ref={boardRef} className="relative w-screen h-[100svh]">
       <div className="absolute inset-0 p-4">
         <div className="flex items-center justify-center">
           <Points value={points} />
