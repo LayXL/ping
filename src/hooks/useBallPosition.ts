@@ -68,10 +68,7 @@ export const useBallPosition = (
       if (isOverlapping) {
         setYVelocity((yVelocity) => -Math.abs(yVelocity))
         return newVal
-      } else if (
-        newVal > (board?.clientHeight ?? 0) - gameConfig.ballSize ||
-        newVal < 0
-      ) {
+      } else if (newVal < 0) {
         setYVelocity((yVelocity) => -yVelocity)
         return prevY
       }
