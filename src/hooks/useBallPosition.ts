@@ -57,6 +57,7 @@ export const useBallPosition = (
 
   useEffect(() => {
     if (isOverlapping) onBounceHandler()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOverlapping])
 
   useInterval(() => {
