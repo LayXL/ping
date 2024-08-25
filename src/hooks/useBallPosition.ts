@@ -23,39 +23,6 @@ export const useBallPosition = (
   const [isOverlapping, setIsOverlapping] = useState(false)
 
   useEffect(() => {
-    if (!board?.clientHeight) return
-
-    const ballRect = {
-      left: x,
-      right: x + gameConfig.ballSize,
-      top: y,
-      bottom: y + gameConfig.ballSize,
-    }
-
-    const controllerRect = {
-      left: controllerPosition,
-      right: controllerPosition + gameConfig.controllerSize,
-      top:
-        board.clientHeight -
-        gameConfig.controllerHeight -
-        gameConfig.controllerOffset,
-      bottom: (board?.clientHeight ?? 0) - gameConfig.controllerOffset,
-    }
-
-    const isOverlapping =
-      controllerRect.left < ballRect.right &&
-      controllerRect.right > ballRect.left &&
-      controllerRect.top < ballRect.bottom &&
-      controllerRect.bottom > ballRect.top
-
-    if (isOverlapping) {
-      setYVelocity((yVelocity) => -yVelocity)
-    }
-
-    setIsOverlapping(isOverlapping)
-  }, [x, y, controllerPosition, board?.clientHeight])
-
-  useEffect(() => {
     if (isOverlapping) onBounceHandler()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOverlapping])
@@ -63,10 +30,45 @@ export const useBallPosition = (
   useInterval(() => {
     if (isDead) return
 
+    const checkIsOverlapping = () => {
+      if (!board?.clientHeight) return false
+
+      const ballRect = {
+        left: x,
+        right: x + gameConfig.ballSize,
+        top: y,
+        bottom: y + gameConfig.ballSize,
+      }
+
+      const controllerRect = {
+        left: controllerPosition,
+        right: controllerPosition + gameConfig.controllerSize,
+        top:
+          board.clientHeight -
+          gameConfig.controllerHeight -
+          gameConfig.controllerOffset,
+        bottom: (board?.clientHeight ?? 0) - gameConfig.controllerOffset,
+      }
+
+      const isOverlapping =
+        ballRect.right > controllerRect.left &&
+        ballRect.left < controllerRect.right &&
+        ballRect.bottom > controllerRect.top
+
+      return isOverlapping
+    }
+
     setY((prevY) => {
       const newVal = prevY + yVelocity
 
-      if (
+      const isOverlapping = checkIsOverlapping()
+
+      setIsOverlapping(isOverlapping)
+
+      if (isOverlapping) {
+        setYVelocity((yVelocity) => -Math.abs(yVelocity))
+        return newVal
+      } else if (
         newVal > (board?.clientHeight ?? 0) - gameConfig.ballSize ||
         newVal < 0
       ) {
