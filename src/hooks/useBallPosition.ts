@@ -7,10 +7,12 @@ export const useBallPosition = (
     board,
     controllerPosition,
     isDead,
+    multiplier,
   }: {
     board: HTMLDivElement | null
     controllerPosition: number
     isDead: boolean
+    multiplier: number
   },
   onBounceHandler: () => void
 ) => {
@@ -59,7 +61,7 @@ export const useBallPosition = (
     }
 
     setY((prevY) => {
-      const newVal = prevY + yVelocity
+      const newVal = prevY + yVelocity * multiplier
 
       const isOverlapping = checkIsOverlapping()
 
@@ -77,7 +79,7 @@ export const useBallPosition = (
     })
 
     setX((prevX) => {
-      const newVal = prevX + xVelocity
+      const newVal = prevX + xVelocity * multiplier
 
       if (
         newVal > (board?.clientWidth ?? 0) - gameConfig.ballSize ||

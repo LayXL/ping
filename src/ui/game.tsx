@@ -1,9 +1,10 @@
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { gameConfig } from "../config"
 import { useBallPosition } from "../hooks/useBallPosition"
 import { useControllerPosition } from "../hooks/useControllerPosition"
 import { useDeath } from "../hooks/useIsDead"
 import { Controller } from "./controller"
+import { Points } from "./points"
 
 export const Game = () => {
   const boardRef = useRef<HTMLDivElement>(null)
@@ -16,11 +17,21 @@ export const Game = () => {
     isDead,
   })
 
+  const multiplier = useMemo(() => {
+    if (points >= 50) return 2
+    if (points >= 25) return 1.75
+    if (points >= 10) return 1.5
+    if (points >= 5) return 1.1
+
+    return 1
+  }, [points])
+
   const [ballPosition] = useBallPosition(
     {
       board: boardRef.current,
       controllerPosition,
       isDead,
+      multiplier,
     },
     () => {
       setPoints((points) => points + 1)
@@ -35,7 +46,7 @@ export const Game = () => {
     <div ref={boardRef} className="relative w-screen h-screen">
       <div className="absolute inset-0 p-4">
         <div className="flex items-center justify-center">
-          <p className="text-xl font-bold" children={points} />
+          <Points value={points} />
         </div>
       </div>
 
