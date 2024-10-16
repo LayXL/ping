@@ -1,4 +1,4 @@
-import { gameConfig } from "../config"
+import { gameConfig } from "../../config"
 
 export const Controller = () => {
   return (

@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react"
 import { useScrollLock } from "usehooks-ts"
-import { gameConfig } from "../config"
+import { gameConfig } from "../../config"
 import { useBallPosition } from "../hooks/useBallPosition"
 import { useControllerPosition } from "../hooks/useControllerPosition"
 import { useDeath } from "../hooks/useIsDead"

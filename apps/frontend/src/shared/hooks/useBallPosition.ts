@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { gameConfig } from "../config"
+import { gameConfig } from "../../config"
 import { useInterval } from "./useInterval"
 
 export const useBallPosition = (
@@ -24,9 +24,9 @@ export const useBallPosition = (
 
   const [isOverlapping, setIsOverlapping] = useState(false)
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (isOverlapping) onBounceHandler()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOverlapping])
 
   useInterval(() => {
@@ -70,7 +70,9 @@ export const useBallPosition = (
       if (isOverlapping) {
         setYVelocity((yVelocity) => -Math.abs(yVelocity))
         return newVal
-      } else if (newVal < 0) {
+      }
+
+      if (newVal < 0) {
         setYVelocity((yVelocity) => -yVelocity)
         return prevY
       }

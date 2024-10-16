@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { gameConfig } from "../config"
+import { gameConfig } from "../../config"
 import { useMousePosition } from "./useMousePosition"
 
 export const useControllerPosition = ({
