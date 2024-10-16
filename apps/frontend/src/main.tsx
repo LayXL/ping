@@ -1,9 +1,10 @@
 import React from "react"
-import ReactDOM from "react-dom/client"
+import { createRoot } from "react-dom/client"
 import "./index.css"
 import { GameWrapper } from "./shared/ui/game-wrapper"
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+// biome-ignore lint/style/noNonNullAssertion: <explanation>
+createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <GameWrapper />
   </React.StrictMode>
