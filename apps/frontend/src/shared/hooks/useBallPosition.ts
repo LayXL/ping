@@ -72,7 +72,7 @@ export const useBallPosition = (
 
       if (isOverlapping) {
         setYVelocity((yVelocity) => -Math.abs(yVelocity))
-        haptic("impactMedium")
+        haptic("impactLight")
         return newVal
       }
 
