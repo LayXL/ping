@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { gameConfig } from "../../config"
+import { useHaptic } from "./use-haptic"
 import { useInterval } from "./useInterval"
 
 export const useBallPosition = (
@@ -16,6 +17,8 @@ export const useBallPosition = (
   },
   onBounceHandler: () => void
 ) => {
+  const haptic = useHaptic()
+
   const [xVelocity, setXVelocity] = useState(gameConfig.ballSpeed as number)
   const [yVelocity, setYVelocity] = useState(gameConfig.ballSpeed as number)
 
@@ -69,11 +72,13 @@ export const useBallPosition = (
 
       if (isOverlapping) {
         setYVelocity((yVelocity) => -Math.abs(yVelocity))
+        haptic("impactMedium")
         return newVal
       }
 
       if (newVal < 0) {
         setYVelocity((yVelocity) => -yVelocity)
+        haptic("selection")
         return prevY
       }
 
@@ -88,6 +93,7 @@ export const useBallPosition = (
         newVal < 0
       ) {
         setXVelocity((xVelocity) => -xVelocity)
+        haptic("selection")
         return prevX
       }
 
