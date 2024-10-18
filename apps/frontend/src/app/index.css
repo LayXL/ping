@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Geist";
+  src: url("/Geist.ttf");
+}
+
+@layer base {
+  body {
+    --ma-theme-bg-primary: 20, 20, 20;
+    --ma-theme-bg-surface: 34, 34, 34;
+    --ma-theme-bg-inversed: 255, 255, 255;
+    --ma-theme-bg-accent: 0, 255, 178;
+    --ma-theme-bg-on-accent: 0, 0, 0;
+    --ma-theme-bg-destructive: 244, 1, 77;
+    --ma-theme-text-primary: 255, 255, 255;
+    --ma-theme-text-inversed: 0, 0, 0;
+    --ma-theme-text-accent: 255, 255, 255;
+    --ma-theme-text-on-accent: 0, 0, 0;
+    --ma-theme-text-destructive: 244, 1, 77;
+
+    /* --ma-viewport-height: calc(100vh - env(safe-area-inset-bottom)); */
+    --safe-area-bottom: env(safe-area-inset-bottom);
+  }
+
+  body {
+    font-family: "Geist", system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+      "Helvetica Neue", sans-serif;
+    user-select: none;
+    cursor: default;
+    background-color: rgb(var(--ma-theme-bg-primary));
+    color: rgb(var(--ma-theme-text-primary));
+    overscroll-behavior-x: none;
+    overflow-x: hidden;
+  }
+}
+
+[class*="vkui"] {
+  box-sizing: content-box;
+}
+
+button {
+  text-align: inherit;
+}
+
+html,
+body,
+#root,
+.vkuiAppRoot {
+  min-height: 100lvh;
+}
+
+.vkuiAppRoot {
+  --vkui--color_background_content: rgb(var(--ma-theme-bg-primary)) !important;
+  --vkui--color_text_primary: rgb(var(--ma-theme-text-primary)) !important;
+}
+
+.vkui--sizeX-none {
+  background: inherit !important;
+}
+
+.vkuiTokensClassProvider--default-color {
+  color: rgb(var(--ma-theme-text-primary)) !important;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    scale: 0.95;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+    transform: translateY(0);
+  }
+}
+
+.press-scale {
+  scale: 1;
+  transition: scale 0.12s ease-in-out;
+}
+
+.press-scale:active {
+  scale: 0.95;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
