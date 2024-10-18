@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { useHaptic } from "../hooks/use-haptic"
 import { cn } from "../utils/cn"
 
 type ButtonProps = {
@@ -9,6 +10,7 @@ type ButtonProps = {
 }
 
 export const Button = (props: ButtonProps) => {
+  const haptic = useHaptic()
   const variant = props.variant ?? "primary"
 
   return (
@@ -20,7 +22,10 @@ export const Button = (props: ButtonProps) => {
         variant === "secondary" &&
           "border border-accent hover:border-accent/80 active:border-accent/70 text-accent hover:text-accent/80 active:text-accent/70"
       )}
-      onClick={props.onClick}
+      onClick={() => {
+        haptic("selection")
+        props.onClick?.()
+      }}
     >
       <p children={props.label} className="text-lg font-medium" />
       {props.after}
