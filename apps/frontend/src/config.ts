@@ -1,7 +1,7 @@
 export const gameConfig = {
-  controllerSize: 128,
-  controllerHeight: 12,
-  controllerOffset: 12,
-  ballSize: 16,
-  ballSpeed: 4,
+  controllerSize: 128 + 32,
+  controllerHeight: 28,
+  controllerOffset: 16,
+  ballSize: 32,
+  ballSpeed: 1.5,
 } as const

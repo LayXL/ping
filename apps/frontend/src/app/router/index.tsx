@@ -1,3 +1,4 @@
+import { Game } from "@/pages/game"
 import { Outlet, createBrowserRouter } from "react-router-dom"
 import { Home } from "../../pages/home"
 
@@ -13,6 +14,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: "/game",
+        element: <Game />,
       },
     ],
   },

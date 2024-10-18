@@ -93,7 +93,7 @@ export const useBallPosition = (
 
       return newVal
     })
-  }, 1000 / 60)
+  }, 1000 / 200)
 
   return [
     { x, y },

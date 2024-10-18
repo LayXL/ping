@@ -14,10 +14,7 @@ export const Points = (props: PointsProps) => {
     setDisplayValue(props.value)
 
     if (props.value > 0) {
-      animationControls.start({
-        scale: [1.5, 1],
-        color: ["#00ff00", "#fff"],
-      })
+      animationControls.start({ scale: [1.5, 1] })
     }
   }, [animationControls, props.value])
 
@@ -25,7 +22,7 @@ export const Points = (props: PointsProps) => {
     <motion.div
       animate={animationControls}
       transition={{ duration: 0.3 }}
-      className="text-2xl font-bold text-center"
+      className="text-[128px] font-black opacity-50 text-center mix-blend-soft-light"
       children={displayValue}
     />
   )

@@ -10,7 +10,7 @@
     "attributePosition": "auto"
   },
   "files": {
-    "ignore": ["emojis.json"]
+    "ignore": ["emojis.json", "node_modules/**/*"]
   },
   "organizeImports": { "enabled": true },
   "linter": {

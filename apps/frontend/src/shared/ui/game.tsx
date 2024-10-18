@@ -1,13 +1,18 @@
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useScrollLock } from "usehooks-ts"
 import { gameConfig } from "../../config"
 import { useBallPosition } from "../hooks/useBallPosition"
 import { useControllerPosition } from "../hooks/useControllerPosition"
 import { useDeath } from "../hooks/useIsDead"
+import { cn } from "../utils/cn"
 import { Controller } from "./controller"
 import { Points } from "./points"
 
-export const Game = () => {
+type GameProps = {
+  onDead?: () => void
+}
+
+export const Game = (props: GameProps) => {
   const boardRef = useRef<HTMLDivElement>(null)
 
   const [points, setPoints] = useState(0)
@@ -22,7 +27,7 @@ export const Game = () => {
     if (points >= 50) return 2
     if (points >= 25) return 1.75
     if (points >= 10) return 1.5
-    if (points >= 5) return 1.1
+    if (points >= 5) return 1.25
 
     return 1
   }, [points])
@@ -43,32 +48,40 @@ export const Game = () => {
     if (val !== isDead) setIsDead(val)
   })
 
+  useEffect(() => {
+    if (isDead) props.onDead?.()
+  }, [isDead, props.onDead])
+
   useScrollLock()
 
   return (
-    <div ref={boardRef} className="relative w-screen h-[100svh]">
-      <div className="absolute inset-0 p-4">
-        <div className="flex items-center justify-center">
-          <Points value={points} />
-        </div>
+    <div ref={boardRef} className="relative size-full">
+      <div className="absolute inset-0 p-4 flex items-center justify-center">
+        <Points value={points} />
       </div>
 
       <div
-        className="absolute"
+        className="absolute px-4"
         style={{
           bottom: gameConfig.controllerOffset,
           transform: `translateX(${controllerPosition}px)`,
+          width: gameConfig.controllerSize,
+          height: gameConfig.controllerHeight,
         }}
       >
         <Controller />
       </div>
 
       <div
-        className="absolute size-4 rounded-full bg-white"
+        className={cn(
+          "absolute rounded-full bg-white transition-[width,height]"
+        )}
         style={{
+          width: isDead ? 0 : gameConfig.ballSize,
+          height: isDead ? 0 : gameConfig.ballSize,
           transform: `translateX(${ballPosition.x}px) translateY(${ballPosition.y}px)`,
         }}
-      ></div>
+      />
     </div>
   )
 }
