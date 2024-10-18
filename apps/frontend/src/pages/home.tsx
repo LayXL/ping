@@ -5,7 +5,7 @@ export const Home = () => {
   const navigate = useNavigate()
 
   return (
-    <div className="h-full pb-safe-area-bottom">
+    <div className="h-full mb-safe-area-bottom">
       <div className="h-full p-4 flex flex-col gap-4">
         <div className="flex-1">{/*  */}</div>
 
