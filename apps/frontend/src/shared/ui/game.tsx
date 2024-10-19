@@ -1,3 +1,4 @@
+import { motion } from "framer-motion"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useScrollLock } from "usehooks-ts"
 import { gameConfig } from "../../config"
@@ -69,14 +70,21 @@ export const Game = (props: GameProps) => {
         <Controller />
       </div>
 
-      <div
-        className={cn(
-          "absolute rounded-full bg-white transition-[width,height]"
-        )}
+      <motion.img
+        src="/skins/hamster.webp"
+        alt=""
+        className={cn("absolute transition-[width,height]")}
+        initial={{ rotate: 0 }}
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Number.POSITIVE_INFINITY, duration: 10 }}
         style={{
           width: isDead ? 0 : gameConfig.ballSize,
           height: isDead ? 0 : gameConfig.ballSize,
-          transform: `translateX(${ballPosition.x}px) translateY(${ballPosition.y}px)`,
+
+          translateX: ballPosition.x,
+          translateY: ballPosition.y,
+
+          // transform: `translateX(${ballPosition.x}px) translateY(${ballPosition.y}px)`,
         }}
       />
     </div>
