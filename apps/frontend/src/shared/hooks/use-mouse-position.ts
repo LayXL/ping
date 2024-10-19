@@ -6,7 +6,7 @@ type MousePosition = {
   y: number | null
 }
 
-export const useMousePosition = (isStopUpdate = false) => {
+export const useMousePosition = () => {
   const [pos, setPos] = useState<MousePosition>({
     x: document.body.clientWidth / 2,
     y: 0,
@@ -46,13 +46,11 @@ export const useMousePosition = (isStopUpdate = false) => {
       setPos({ x, y })
     }
 
-    if (!isStopUpdate) {
-      if (!isMobile) {
-        window.addEventListener("mousemove", updateMousePosition)
-      } else {
-        window.addEventListener("pointerdown", updateStartPosition)
-        window.addEventListener("pointermove", updateTouchPosition)
-      }
+    if (!isMobile) {
+      window.addEventListener("mousemove", updateMousePosition)
+    } else {
+      window.addEventListener("pointerdown", updateStartPosition)
+      window.addEventListener("pointermove", updateTouchPosition)
     }
 
     return () => {
@@ -63,7 +61,7 @@ export const useMousePosition = (isStopUpdate = false) => {
         window.removeEventListener("pointermove", updateTouchPosition)
       }
     }
-  }, [initialPos.x, initialPos.y, isStopUpdate, pos, startPos.x, startPos.y])
+  }, [initialPos.x, initialPos.y, pos, startPos.x, startPos.y])
 
   return pos
 }

@@ -2,6 +2,7 @@ import { GameModeSelect } from "@/app/widgets/game-mode-select"
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useHaptic } from "../hooks/use-haptic"
 import { Button } from "./button"
 import { Card } from "./card"
 import { Game } from "./game"
@@ -13,12 +14,18 @@ enum ScreenState {
 
 export const GameWrapper = () => {
   const navigate = useNavigate()
+  const haptic = useHaptic()
 
   const [state, setState] = useState<ScreenState>(ScreenState.GAME)
 
   return (
     <div className="relative size-full flex flex-col">
-      <Game onDead={() => setState(ScreenState.GAME_OVER)} />
+      <Game
+        onDead={() => {
+          setState(ScreenState.GAME_OVER)
+          haptic("error")
+        }}
+      />
 
       <motion.div
         className="pointer-events-none"
@@ -61,7 +68,7 @@ export const GameWrapper = () => {
               navigate("/")
             }}
           />
-          <p className="text-primary/30 font-medium text-sm text-center">
+          <p className="text-primary/75 font-medium text-sm text-center">
             Поделитесь результатом с друзьями
           </p>
         </div>

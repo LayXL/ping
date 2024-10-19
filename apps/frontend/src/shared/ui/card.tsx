@@ -11,7 +11,7 @@ type CardProps = {
 
 export const Card = (props: CardProps) => {
   return (
-    <div className="p-4 bg-surface/50 rounded-[32px] border border-inversed/5 flex-col gap-4 flex">
+    <div className="p-4 bg-inversed/5 rounded-[32px] border border-inversed/5 flex-col gap-4 flex">
       <div className="justify-center items-center gap-2 flex">
         <div className="flex-col justify-center items-center gap-1 flex">
           <p

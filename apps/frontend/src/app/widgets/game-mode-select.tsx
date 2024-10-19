@@ -25,7 +25,7 @@ export const GameModeSelect = (props: GameModeSelectProps) => {
 
       <Button label="Играть" onClick={props.onPlay} />
 
-      <p className="text-primary/30 font-medium text-sm text-center">
+      <p className="text-primary/75 font-medium text-sm text-center">
         Выберите режим игры
       </p>
     </div>

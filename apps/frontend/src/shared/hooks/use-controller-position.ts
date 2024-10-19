@@ -4,12 +4,8 @@ import { useMousePosition } from "./use-mouse-position"
 
 export const useControllerPosition = ({
   board,
-  isDead,
-}: {
-  board: HTMLDivElement | null
-  isDead: boolean
-}) => {
-  const pos = useMousePosition(isDead).x
+}: { board: HTMLDivElement | null }) => {
+  const pos = useMousePosition().x
 
   const controllerTranslation = useMemo(() => {
     return pos && board?.clientWidth ? pos / board.clientWidth : 0

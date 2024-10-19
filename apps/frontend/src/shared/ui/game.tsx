@@ -18,10 +18,7 @@ export const Game = (props: GameProps) => {
   const [points, setPoints] = useState(0)
   const [isDead, setIsDead] = useState(false)
 
-  const controllerPosition = useControllerPosition({
-    board: boardRef.current,
-    isDead,
-  })
+  const controllerPosition = useControllerPosition({ board: boardRef.current })
 
   const multiplier = useMemo(() => {
     if (points >= 50) return 2

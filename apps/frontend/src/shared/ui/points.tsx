@@ -1,3 +1,4 @@
+import NumberFlow from "@number-flow/react"
 import { motion, useAnimationControls } from "framer-motion"
 import { useEffect, useState } from "react"
 
@@ -14,7 +15,7 @@ export const Points = (props: PointsProps) => {
     setDisplayValue(props.value)
 
     if (props.value > 0) {
-      animationControls.start({ scale: [1.5, 1] })
+      // animationControls.start({ scale: [1.5, 1] })
     }
   }, [animationControls, props.value])
 
@@ -23,7 +24,8 @@ export const Points = (props: PointsProps) => {
       animate={animationControls}
       transition={{ duration: 0.3 }}
       className="text-[128px] font-black opacity-50 text-center mix-blend-soft-light"
-      children={displayValue}
-    />
+    >
+      <NumberFlow value={displayValue} />
+    </motion.div>
   )
 }

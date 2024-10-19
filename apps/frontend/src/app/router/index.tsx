@@ -6,7 +6,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <div className="font-sans bg-gradient-to-b from-[#001f1a] to-[#02151c] h-screen max-h-screen overflow-hidden">
+      <div className="font-sans bg-gradient-to-b from-[#005143] to-[#001c1a] h-screen max-h-screen overflow-hidden">
         <Outlet />
       </div>
     ),
