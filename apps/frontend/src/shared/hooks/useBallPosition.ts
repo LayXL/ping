@@ -22,8 +22,8 @@ export const useBallPosition = (
   const [xVelocity, setXVelocity] = useState(gameConfig.ballSpeed as number)
   const [yVelocity, setYVelocity] = useState(gameConfig.ballSpeed as number)
 
-  const [x, setX] = useState(0)
-  const [y, setY] = useState(0)
+  const [x, setX] = useState(document.body.clientWidth / 2)
+  const [y, setY] = useState(128)
 
   const [isOverlapping, setIsOverlapping] = useState(false)
 

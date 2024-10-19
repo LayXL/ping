@@ -7,7 +7,10 @@ type MousePosition = {
 }
 
 export const useMousePosition = (isStopUpdate = false) => {
-  const [pos, setPos] = useState<MousePosition>({ x: 0, y: 0 })
+  const [pos, setPos] = useState<MousePosition>({
+    x: document.body.clientWidth / 2,
+    y: 0,
+  })
 
   const [initialPos, setInitialPos] = useState<MousePosition>({
     x: null,
