@@ -10,7 +10,7 @@ export const GameModeSelect = (props: GameModeSelectProps) => {
     <div className="flex flex-col gap-4">
       <Card
         title="Обычный"
-        description="Управляй одной платформой и отбивай один шар"
+        description="Управляй платформой и отбивай шар"
         items={[
           {
             title: "0",

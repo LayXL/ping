@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { gameConfig } from "../../config"
 import { useHaptic } from "./use-haptic"
-import { useInterval } from "./useInterval"
+import { useInterval } from "./use-interval"
 
 export const useBallPosition = (
   {

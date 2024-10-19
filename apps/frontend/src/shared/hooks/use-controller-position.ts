@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 import { gameConfig } from "../../config"
-import { useMousePosition } from "./useMousePosition"
+import { useMousePosition } from "./use-mouse-position"
 
 export const useControllerPosition = ({
   board,
