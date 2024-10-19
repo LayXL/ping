@@ -61,10 +61,10 @@ export const Game = (props: GameProps) => {
       </div>
 
       <div
-        className="absolute px-4"
+        className="absolute"
         style={{
           bottom: gameConfig.controllerOffset,
-          transform: `translateX(${controllerPosition}px)`,
+          transform: `translateX(min(max(16px, ${controllerPosition}px), calc(100vw - 16px - ${gameConfig.controllerSize}px)))`,
           width: gameConfig.controllerSize,
           height: gameConfig.controllerHeight,
         }}
