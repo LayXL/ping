@@ -56,8 +56,8 @@ export const useBallPosition = (
       }
 
       const isOverlapping =
-        ballRect.right > controllerRect.left &&
-        ballRect.left < controllerRect.right &&
+        ballRect.left + gameConfig.ballSize / 2 > controllerRect.left &&
+        ballRect.right - gameConfig.ballSize / 2 < controllerRect.right &&
         ballRect.bottom > controllerRect.top
 
       return isOverlapping

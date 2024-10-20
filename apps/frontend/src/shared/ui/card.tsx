@@ -1,4 +1,5 @@
 import { Fragment, type ReactNode } from "react"
+import { cn } from "../utils/cn"
 
 type CardProps = {
   title?: ReactNode
@@ -7,12 +8,23 @@ type CardProps = {
     title: ReactNode
     description: ReactNode
   }[]
+  variant?: "green" | "red"
 }
 
 export const Card = (props: CardProps) => {
+  const variant = props.variant ?? "green"
+
   return (
-    <div className="p-4 bg-inversed/5 rounded-[32px] border border-inversed/5 flex-col gap-4 flex">
-      <div className="justify-center items-center gap-2 flex">
+    <div className="relative p-6 bg-inversed/5 rounded-[40px] border border-inversed/5 flex-col gap-4 flex overflow-hidden">
+      <div
+        className={cn(
+          "absolute left-4 right-4 aspect-square bg-accent/25 rounded-full pointer-events-none bottom-0 translate-y-1/2 blur-[64px]",
+          variant === "green" && "bg-accent/25",
+          variant === "red" && "bg-[#FF0004] bg-opacity-25"
+        )}
+      />
+
+      <div className="justify-center items-center gap-2 flex z-10">
         <div className="flex-col justify-center items-center gap-1 flex">
           <p
             className="text-center text-2xl font-semibold"
@@ -24,7 +36,7 @@ export const Card = (props: CardProps) => {
           />
         </div>
       </div>
-      <div className="py-4 bg-primary/30 rounded-2xl border border-inversed/5 items-center flex">
+      <div className="py-4 bg-primary/30 rounded-2xl border border-inversed/5 items-center flex z-10">
         {props.items?.map((item, index) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
           <Fragment key={index}>

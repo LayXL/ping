@@ -25,6 +25,7 @@ export const GameWrapper = () => {
           setState(ScreenState.GAME_OVER)
           haptic("error")
         }}
+        withOffset={state === ScreenState.GAME_OVER}
       />
 
       <motion.div
@@ -41,11 +42,12 @@ export const GameWrapper = () => {
         initial={{ opacity: 0, height: 0 }}
         animate={{
           opacity: state === ScreenState.GAME_OVER ? 1 : 0,
-          height: state === ScreenState.GAME_OVER ? 412 : 0,
+          height: state === ScreenState.GAME_OVER ? 428 : 0,
         }}
       >
         <div className="p-4 flex flex-col gap-4">
           <Card
+            variant="red"
             title="Игра окончена"
             description="Ваш счёт"
             items={[

@@ -9,7 +9,7 @@ export const GameModeSelect = (props: GameModeSelectProps) => {
   return (
     <div className="flex flex-col gap-4">
       <Card
-        title="Обычный"
+        title="Классика"
         description="Управляй платформой и отбивай шар"
         items={[
           {

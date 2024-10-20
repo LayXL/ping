@@ -11,6 +11,7 @@ import { Points } from "./points"
 
 type GameProps = {
   onDead?: () => void
+  withOffset?: boolean
 }
 
 export const Game = (props: GameProps) => {
@@ -53,7 +54,13 @@ export const Game = (props: GameProps) => {
   useScrollLock()
 
   return (
-    <div ref={boardRef} className="relative size-full">
+    <motion.div
+      ref={boardRef}
+      className="relative size-full"
+      animate={{
+        marginBottom: props.withOffset ? 0 : 96,
+      }}
+    >
       <div className="absolute inset-0 p-4 flex items-center justify-center">
         <Points value={points} />
       </div>
@@ -87,6 +94,6 @@ export const Game = (props: GameProps) => {
           // transform: `translateX(${ballPosition.x}px) translateY(${ballPosition.y}px)`,
         }}
       />
-    </div>
+    </motion.div>
   )
 }
