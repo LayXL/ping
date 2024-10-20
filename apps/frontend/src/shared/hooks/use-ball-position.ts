@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { gameConfig } from "../../config"
-import { useHaptic } from "./use-haptic"
 import { useInterval } from "./use-interval"
+
+const randomizeBounce = (xVelocity: number, positionOffset: number): number => {
+  const randomFactor = (Math.random() - 0.5) * 0.2
+  const offsetFactor = positionOffset * 0.3
+  return xVelocity + randomFactor + offsetFactor
+}
 
 export const useBallPosition = (
   {
@@ -15,90 +20,71 @@ export const useBallPosition = (
     isDead: boolean
     multiplier: number
   },
-  onBounceHandler: () => void
+  onBounceHandler: () => void,
+  onDead: () => void
 ) => {
-  const haptic = useHaptic()
-
   const [xVelocity, setXVelocity] = useState(gameConfig.ballSpeed as number)
   const [yVelocity, setYVelocity] = useState(gameConfig.ballSpeed as number)
 
   const [x, setX] = useState(document.body.clientWidth / 2)
   const [y, setY] = useState(128)
 
-  const [isOverlapping, setIsOverlapping] = useState(false)
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    if (isOverlapping) onBounceHandler()
-  }, [isOverlapping])
+  const boardWidth = board ? board.clientWidth : document.body.clientWidth
+  const boardHeight = board ? board.clientHeight : window.innerHeight
+  const platformHeight = gameConfig.controllerHeight
+  const platformWidth = gameConfig.controllerSize
 
   useInterval(() => {
     if (isDead) return
 
-    const checkIsOverlapping = () => {
-      if (!board?.clientHeight) return false
+    let newX = x + xVelocity
+    let newY = y + yVelocity
 
-      const ballRect = {
-        left: x,
-        right: x + gameConfig.ballSize,
-        top: y,
-        bottom: y + gameConfig.ballSize,
-      }
-
-      const controllerRect = {
-        left: controllerPosition,
-        right: controllerPosition + gameConfig.controllerSize,
-        top:
-          board.clientHeight -
-          gameConfig.controllerHeight -
-          gameConfig.controllerOffset,
-        bottom: (board?.clientHeight ?? 0) - gameConfig.controllerOffset,
-      }
-
-      const isOverlapping =
-        ballRect.left + gameConfig.ballSize / 2 > controllerRect.left &&
-        ballRect.right - gameConfig.ballSize / 2 < controllerRect.right &&
-        ballRect.bottom > controllerRect.top
-
-      return isOverlapping
+    if (newX <= 0) {
+      setXVelocity(-xVelocity)
+      newX = 0
     }
 
-    setY((prevY) => {
-      const newVal = prevY + yVelocity * multiplier
+    if (newX + gameConfig.ballSize >= boardWidth) {
+      setXVelocity(-xVelocity)
+      newX = boardWidth - gameConfig.ballSize
+    }
 
-      const isOverlapping = checkIsOverlapping()
+    if (newY <= 0) {
+      setYVelocity(-yVelocity)
+      newY = 0
+    }
 
-      setIsOverlapping(isOverlapping)
+    const platformTop = boardHeight - platformHeight
+    const platformLeft = controllerPosition - platformWidth / 2
+    const platformRight = controllerPosition + platformWidth / 2
 
-      if (isOverlapping) {
-        setYVelocity((yVelocity) => -Math.abs(yVelocity))
-        haptic("impactLight")
-        return newVal
-      }
+    const ballCenterX = newX + gameConfig.ballSize / 2
+    const ballHalfWidth = gameConfig.ballSize / 2
 
-      if (newVal < 0) {
-        setYVelocity((yVelocity) => -yVelocity)
-        haptic("selection")
-        return prevY
-      }
+    if (
+      newY + gameConfig.ballSize >= platformTop &&
+      ballCenterX + ballHalfWidth >= platformLeft &&
+      ballCenterX - ballHalfWidth <= platformRight &&
+      yVelocity > 0
+    ) {
+      const positionOffset =
+        (ballCenterX - controllerPosition) / (platformWidth / 2)
+      const newRandomXVelocity = randomizeBounce(xVelocity, positionOffset)
 
-      return newVal
-    })
+      setXVelocity(newRandomXVelocity)
+      setYVelocity(-yVelocity)
+      onBounceHandler()
+      newY = platformTop - gameConfig.ballSize
+    }
 
-    setX((prevX) => {
-      const newVal = prevX + xVelocity * multiplier
+    if (newY + gameConfig.ballSize >= boardHeight) {
+      onDead()
+      return
+    }
 
-      if (
-        newVal > (board?.clientWidth ?? 0) - gameConfig.ballSize ||
-        newVal < 0
-      ) {
-        setXVelocity((xVelocity) => -xVelocity)
-        haptic("selection")
-        return prevX
-      }
-
-      return newVal
-    })
+    setX(newX)
+    setY(newY)
   }, 1000 / 200)
 
   return [

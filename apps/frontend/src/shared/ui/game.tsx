@@ -4,7 +4,6 @@ import { useScrollLock } from "usehooks-ts"
 import { gameConfig } from "../../config"
 import { useBallPosition } from "../hooks/use-ball-position"
 import { useControllerPosition } from "../hooks/use-controller-position"
-import { useDeath } from "../hooks/use-is-dead"
 import { cn } from "../utils/cn"
 import { Controller } from "./controller"
 import { Points } from "./points"
@@ -40,12 +39,15 @@ export const Game = (props: GameProps) => {
     },
     () => {
       setPoints((points) => points + 1)
+    },
+    () => {
+      setIsDead(true)
     }
   )
 
-  useDeath({ board: boardRef.current, ballPosition }, (val) => {
-    if (val !== isDead) setIsDead(val)
-  })
+  // useDeath({ board: boardRef.current, ballPosition }, (val) => {
+  //   if (val !== isDead) setIsDead(val)
+  // })
 
   useEffect(() => {
     if (isDead) props.onDead?.()
@@ -69,7 +71,7 @@ export const Game = (props: GameProps) => {
         className="absolute"
         style={{
           bottom: gameConfig.controllerOffset,
-          transform: `translateX(min(max(16px, ${controllerPosition}px), calc(100vw - 16px - ${gameConfig.controllerSize}px)))`,
+          transform: `translateX(${controllerPosition}px)`,
           width: gameConfig.controllerSize,
           height: gameConfig.controllerHeight,
         }}
