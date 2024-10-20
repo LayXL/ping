@@ -2,12 +2,6 @@ import { useState } from "react"
 import { gameConfig } from "../../config"
 import { useInterval } from "./use-interval"
 
-const randomizeBounce = (xVelocity: number, positionOffset: number): number => {
-  const randomFactor = (Math.random() - 0.5) * 0.2
-  const offsetFactor = positionOffset * 0.3
-  return xVelocity + randomFactor + offsetFactor
-}
-
 export const useBallPosition = (
   {
     board,
@@ -68,11 +62,6 @@ export const useBallPosition = (
       ballCenterX - ballHalfWidth <= platformRight &&
       yVelocity > 0
     ) {
-      const positionOffset =
-        (ballCenterX - controllerPosition) / (platformWidth / 2)
-      const newRandomXVelocity = randomizeBounce(xVelocity, positionOffset)
-
-      setXVelocity(newRandomXVelocity)
       setYVelocity(-yVelocity)
       onBounceHandler()
       newY = platformTop - gameConfig.ballSize
