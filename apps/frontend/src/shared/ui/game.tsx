@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from "react"
 import { useScrollLock } from "usehooks-ts"
 import { gameConfig } from "../../config"
 import { useControllerPosition } from "../hooks/use-controller-position"
+import { useHaptic } from "../hooks/use-haptic"
 import { useInterval } from "../hooks/use-interval"
 import { cn } from "../utils/cn"
 import { Controller } from "./controller"
@@ -14,6 +15,7 @@ type GameProps = {
 }
 
 export const Game = (props: GameProps) => {
+  const haptic = useHaptic()
   const boardRef = useRef<HTMLDivElement>(null)
 
   const [points, setPoints] = useState(0)
@@ -57,18 +59,21 @@ export const Game = (props: GameProps) => {
 
       if (newX > rightBoundary) {
         setSpeedX(-speedX)
+        haptic("selection")
 
         return { x: rightBoundary, y: newY }
       }
 
       if (newX < leftBoundary) {
         setSpeedX(-speedX)
+        haptic("selection")
 
         return { x: leftBoundary, y: newY }
       }
 
       if (newY < topBoundary) {
         setSpeedY(-speedY)
+        haptic("selection")
 
         return { x: newX, y: topBoundary }
       }
@@ -87,6 +92,8 @@ export const Game = (props: GameProps) => {
         setSpeedY(-speedY)
         setPoints((points) => points + 1)
 
+        haptic("impactMedium")
+
         return {
           x: newX,
           y: controllerTopBoundary,
@@ -96,6 +103,8 @@ export const Game = (props: GameProps) => {
       if (newY > deadBoundary) {
         setIsDead(true)
         props.onDead?.()
+
+        haptic("error")
 
         return { x: newX, y: deadBoundary }
       }
