@@ -12,7 +12,7 @@ enum ScreenState {
   GAME_OVER = 1,
 }
 
-export const GameWrapper = () => {
+export const GameWrapper = (props: { mode: "classic" | "friend" }) => {
   const navigate = useNavigate()
   const haptic = useHaptic()
 
@@ -22,12 +22,13 @@ export const GameWrapper = () => {
   return (
     <div className="relative size-full flex flex-col">
       <Game
+        mode="friend"
         onDead={(score) => {
           setState(ScreenState.GAME_OVER)
           setScore(score)
           haptic("error")
         }}
-        withOffset={state === ScreenState.GAME_OVER}
+        withOffset={state === ScreenState.GAME}
       />
 
       <motion.div
@@ -36,7 +37,7 @@ export const GameWrapper = () => {
         animate={{ opacity: 0, height: 0 }}
       >
         <div className="p-4">
-          <GameModeSelect onPlay={() => navigate("/game")} />
+          <GameModeSelect mode={props.mode} />
         </div>
       </motion.div>
 

@@ -5,11 +5,11 @@ import { gameConfig } from "../../config"
 import { useControllerPosition } from "../hooks/use-controller-position"
 import { useHaptic } from "../hooks/use-haptic"
 import { useInterval } from "../hooks/use-interval"
-import { cn } from "../utils/cn"
 import { Controller } from "./controller"
 import { Points } from "./points"
 
 type GameProps = {
+  mode: "classic" | "friend"
   onDead?: (score: number) => void
   withOffset?: boolean
   isPreview?: boolean
@@ -43,7 +43,23 @@ export const Game = (props: GameProps) => {
         ),
         16
       )
-    : useControllerPosition({ board: boardRef.current })
+    : useControllerPosition({
+        board: boardRef.current,
+        mode: props.mode === "friend" ? "bottom" : "both",
+      })
+
+  const secondControllerPosition =
+    props.mode === "friend" && props.isPreview
+      ? Math.max(
+          Math.min(
+            ballPosition.x - gameConfig.controllerSize / 2,
+            (boardRef.current?.clientWidth ?? 0) -
+              gameConfig.controllerSize -
+              16
+          ),
+          16
+        )
+      : useControllerPosition({ board: boardRef.current, mode: "top" })
 
   useInterval(() => {
     if (isDead) return
@@ -83,7 +99,7 @@ export const Game = (props: GameProps) => {
         return { x: leftBoundary, y: newY }
       }
 
-      if (newY < topBoundary) {
+      if (newY < topBoundary && props.mode === "classic") {
         setSpeedY(-speedY)
 
         if (!props.isPreview) haptic("selection")
@@ -91,35 +107,70 @@ export const Game = (props: GameProps) => {
         return { x: newX, y: topBoundary }
       }
 
-      const isCollidingLeft =
-        newX > controllerPosition - gameConfig.ballSize / 2
+      const checkIsCollidingController = (
+        controllerPosition: number,
+        position: "top" | "bottom"
+      ) => {
+        const isCollidingLeft =
+          newX > controllerPosition - gameConfig.ballSize / 2
 
-      const isCollidingRight =
-        newX <
-        controllerPosition + gameConfig.controllerSize + gameConfig.ballSize / 2
+        const isCollidingRight =
+          newX <
+          controllerPosition +
+            gameConfig.controllerSize +
+            gameConfig.ballSize / 2
 
-      const controllerTopBoundary =
-        boardHeight - gameConfig.controllerHeight - gameConfig.ballSize / 2
+        const controllerBoundary =
+          position === "bottom"
+            ? boardHeight -
+              gameConfig.controllerHeight -
+              gameConfig.ballSize / 2
+            : gameConfig.ballSize
 
-      if (newY > controllerTopBoundary && isCollidingLeft && isCollidingRight) {
-        setSpeedY(-speedY)
-        if (!props.isPreview) setPoints((points) => points + 1)
+        const cond =
+          position === "bottom"
+            ? newY > controllerBoundary
+            : newY < controllerBoundary
 
-        if (!props.isPreview) haptic("impactMedium")
+        if (cond && isCollidingLeft && isCollidingRight) {
+          setSpeedY(-speedY)
+          if (!props.isPreview) setPoints((points) => points + 1)
 
-        return {
-          x: newX,
-          y: controllerTopBoundary,
+          if (!props.isPreview) haptic("impactMedium")
+
+          return {
+            x: newX,
+            y: controllerBoundary,
+          }
         }
       }
 
-      if (newY > deadBoundary) {
+      const bottomController = checkIsCollidingController(
+        controllerPosition,
+        "bottom"
+      )
+
+      if (bottomController) return bottomController
+
+      if (props.mode === "friend") {
+        const topController = checkIsCollidingController(
+          secondControllerPosition,
+          "top"
+        )
+
+        if (topController) return topController
+      }
+
+      if (
+        newY > deadBoundary ||
+        (newY < topBoundary && props.mode === "friend")
+      ) {
         setIsDead(true)
         props.onDead?.(points)
 
         if (!props.isPreview) haptic("error")
 
-        return { x: newX, y: deadBoundary }
+        return { x: newX, y: newY }
       }
 
       return { x: newX, y: newY }
@@ -130,47 +181,71 @@ export const Game = (props: GameProps) => {
 
   return (
     <motion.div
-      ref={boardRef}
-      className="relative size-full"
+      className="size-full"
       animate={{
-        marginBottom: props.withOffset ? 0 : 96,
+        paddingTop: props.withOffset && props.mode === "friend" ? 96 : 16,
+        paddingBottom: props.withOffset ? 96 : 16,
       }}
     >
-      <div className="absolute inset-0 p-4 flex items-center justify-center">
-        <Points value={points} />
-      </div>
+      <motion.div ref={boardRef} className="relative size-full">
+        {!props.isPreview && (
+          <div className="absolute inset-0 p-4 flex items-center justify-center">
+            <Points value={points} />
+          </div>
+        )}
 
-      <div
-        className="absolute"
-        style={{
-          bottom: gameConfig.controllerOffset,
-          transform: `translateX(${controllerPosition}px)`,
-          width: gameConfig.controllerSize,
-          height: gameConfig.controllerHeight,
-        }}
-      >
-        <Controller />
-      </div>
-
-      <motion.div
-        className="absolute bg-white"
-        style={{
-          translateX: ballPosition.x - gameConfig.ballSize / 2,
-          translateY: ballPosition.y - gameConfig.ballSize / 2,
-        }}
-      >
-        <motion.img
-          src="/skins/hamster.webp"
-          alt=""
-          className={cn("transition-[width,height]")}
-          initial={{ rotate: 0 }}
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Number.POSITIVE_INFINITY, duration: 10 }}
+        <div
+          className="absolute"
           style={{
-            width: isDead ? 0 : gameConfig.ballSize,
-            height: isDead ? 0 : gameConfig.ballSize,
+            bottom: gameConfig.controllerOffset,
+            transform: `translateX(${controllerPosition}px)`,
+            width: gameConfig.controllerSize,
+            height: gameConfig.controllerHeight,
           }}
-        />
+        >
+          <Controller />
+        </div>
+
+        {props.mode === "friend" && (
+          <div
+            className="absolute"
+            style={{
+              top: gameConfig.controllerOffset,
+              transform: `translateX(${secondControllerPosition}px)`,
+              width: gameConfig.controllerSize,
+              height: gameConfig.controllerHeight,
+            }}
+          >
+            <Controller />
+          </div>
+        )}
+
+        <motion.div
+          className="absolute bg-white rounded-full"
+          animate={{
+            scale: isDead ? 0 : 1,
+            opacity: isDead ? 0 : 1,
+          }}
+          style={{
+            width: gameConfig.ballSize,
+            height: gameConfig.ballSize,
+            translateX: ballPosition.x - gameConfig.ballSize / 2,
+            translateY: ballPosition.y - gameConfig.ballSize / 2,
+          }}
+        >
+          {/* <motion.img
+            src="/skins/hamster.webp"
+            alt=""
+            className={cn("transition-[width,height]")}
+            initial={{ rotate: 0 }}
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Number.POSITIVE_INFINITY, duration: 10 }}
+            style={{
+              width: isDead ? 0 : gameConfig.ballSize,
+              height: isDead ? 0 : gameConfig.ballSize,
+            }}
+          /> */}
+        </motion.div>
       </motion.div>
     </motion.div>
   )

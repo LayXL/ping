@@ -3,6 +3,7 @@ import { useHaptic } from "../hooks/use-haptic"
 import { cn } from "../utils/cn"
 
 type ButtonProps = {
+  disabled?: boolean
   variant?: "primary" | "secondary"
   label?: string
   after?: ReactNode
@@ -20,7 +21,8 @@ export const Button = (props: ButtonProps) => {
         variant === "primary" &&
           "bg-accent hover:bg-opacity-80 active:bg-opacity-70 text-on-accent",
         variant === "secondary" &&
-          "border border-accent hover:border-accent/80 active:border-accent/70 text-accent hover:text-accent/80 active:text-accent/70"
+          "border border-accent hover:border-accent/80 active:border-accent/70 text-accent hover:text-accent/80 active:text-accent/70",
+        props.disabled && "opacity-30 cursor-not-allowed"
       )}
       onClick={() => {
         haptic("selection")

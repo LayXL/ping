@@ -6,7 +6,21 @@ type MousePosition = {
   y: number | null
 }
 
-export const useMousePosition = () => {
+const isTouchInAllowedZone = (mode: "top" | "bottom" | "both", y: number) => {
+  const screenHeight = window.innerHeight
+
+  if (mode === "top") {
+    return y <= screenHeight / 2
+  }
+
+  if (mode === "bottom") {
+    return y > screenHeight / 2
+  }
+
+  return true
+}
+
+export const useMousePosition = (mode: "both" | "bottom" | "top" = "both") => {
   const [pos, setPos] = useState<MousePosition>({
     x: document.body.clientWidth / 2,
     y: 0,
@@ -24,6 +38,8 @@ export const useMousePosition = () => {
     }
 
     const updateStartPosition = (ev: PointerEvent) => {
+      if (!isTouchInAllowedZone(mode, ev.clientY)) return
+
       setStartPos({ x: ev.clientX, y: ev.clientY })
       setInitialPos(pos)
     }
@@ -36,6 +52,8 @@ export const useMousePosition = () => {
         startPos.y === null
       )
         return
+
+      if (!isTouchInAllowedZone(mode, ev.clientY)) return
 
       const deltaX = ev.clientX - startPos.x
       const deltaY = ev.clientY - startPos.y
@@ -61,7 +79,7 @@ export const useMousePosition = () => {
         window.removeEventListener("pointermove", updateTouchPosition)
       }
     }
-  }, [initialPos.x, initialPos.y, pos, startPos.x, startPos.y])
+  }, [initialPos.x, initialPos.y, pos, startPos.x, startPos.y, mode])
 
   return pos
 }
