@@ -17,12 +17,14 @@ export const GameWrapper = () => {
   const haptic = useHaptic()
 
   const [state, setState] = useState<ScreenState>(ScreenState.GAME)
+  const [score, setScore] = useState(0)
 
   return (
     <div className="relative size-full flex flex-col">
       <Game
-        onDead={() => {
+        onDead={(score) => {
           setState(ScreenState.GAME_OVER)
+          setScore(score)
           haptic("error")
         }}
         withOffset={state === ScreenState.GAME_OVER}
@@ -52,24 +54,22 @@ export const GameWrapper = () => {
             description="Ваш счёт"
             items={[
               {
-                title: "0",
+                title: score,
                 description: "Результат",
               },
             ]}
           />
-          <Button
-            label="Продолжить"
-            onClick={() => {
-              navigate("/")
-            }}
-          />
-          <Button
-            variant="secondary"
-            label="Поделиться"
-            onClick={() => {
-              navigate("/")
-            }}
-          />
+          <div className="flex flex-col gap-2">
+            <Button label="Продолжить" onClick={() => navigate("/")} />
+            {/* <Button
+              variant="secondary"
+              label="Поделиться"
+              onClick={() => {
+                // TODO
+                navigate("/")
+              }}
+            /> */}
+          </div>
           <p className="text-primary/75 font-medium text-sm text-center">
             Поделитесь результатом с друзьями
           </p>

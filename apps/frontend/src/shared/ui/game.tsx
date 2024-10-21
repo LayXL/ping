@@ -10,7 +10,7 @@ import { Controller } from "./controller"
 import { Points } from "./points"
 
 type GameProps = {
-  onDead?: () => void
+  onDead?: (score: number) => void
   withOffset?: boolean
 }
 
@@ -102,7 +102,7 @@ export const Game = (props: GameProps) => {
 
       if (newY > deadBoundary) {
         setIsDead(true)
-        props.onDead?.()
+        props.onDead?.(points)
 
         haptic("error")
 
