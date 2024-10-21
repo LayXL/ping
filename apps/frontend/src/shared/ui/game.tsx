@@ -12,16 +12,16 @@ import { Points } from "./points"
 type GameProps = {
   onDead?: (score: number) => void
   withOffset?: boolean
+  isPreview?: boolean
+  points?: number
 }
 
 export const Game = (props: GameProps) => {
   const haptic = useHaptic()
   const boardRef = useRef<HTMLDivElement>(null)
 
-  const [points, setPoints] = useState(0)
+  const [points, setPoints] = useState(props.points ?? 0)
   const [isDead, setIsDead] = useState(false)
-
-  const controllerPosition = useControllerPosition({ board: boardRef.current })
 
   const multiplier = useMemo(() => {
     if (points >= 50) return 2
@@ -35,12 +35,22 @@ export const Game = (props: GameProps) => {
   const [speedX, setSpeedX] = useState(gameConfig.ballSpeed as number)
   const [speedY, setSpeedY] = useState(gameConfig.ballSpeed as number)
 
+  const controllerPosition = props.isPreview
+    ? Math.max(
+        Math.min(
+          ballPosition.x - gameConfig.controllerSize / 2,
+          (boardRef.current?.clientWidth ?? 0) - gameConfig.controllerSize - 16
+        ),
+        16
+      )
+    : useControllerPosition({ board: boardRef.current })
+
   useInterval(() => {
     if (isDead) return
 
     setBallPosition((prev) => {
-      const newX = prev.x + speedX * multiplier
-      const newY = prev.y + speedY * multiplier
+      const newX = prev.x + speedX * (props.isPreview ? 1 : multiplier)
+      const newY = prev.y + speedY * (props.isPreview ? 1 : multiplier)
 
       const boardWidth =
         boardRef.current?.clientWidth ?? Number.POSITIVE_INFINITY
@@ -59,21 +69,24 @@ export const Game = (props: GameProps) => {
 
       if (newX > rightBoundary) {
         setSpeedX(-speedX)
-        haptic("selection")
+
+        if (!props.isPreview) haptic("selection")
 
         return { x: rightBoundary, y: newY }
       }
 
       if (newX < leftBoundary) {
         setSpeedX(-speedX)
-        haptic("selection")
+
+        if (!props.isPreview) haptic("selection")
 
         return { x: leftBoundary, y: newY }
       }
 
       if (newY < topBoundary) {
         setSpeedY(-speedY)
-        haptic("selection")
+
+        if (!props.isPreview) haptic("selection")
 
         return { x: newX, y: topBoundary }
       }
@@ -90,9 +103,9 @@ export const Game = (props: GameProps) => {
 
       if (newY > controllerTopBoundary && isCollidingLeft && isCollidingRight) {
         setSpeedY(-speedY)
-        setPoints((points) => points + 1)
+        if (!props.isPreview) setPoints((points) => points + 1)
 
-        haptic("impactMedium")
+        if (!props.isPreview) haptic("impactMedium")
 
         return {
           x: newX,
@@ -104,7 +117,7 @@ export const Game = (props: GameProps) => {
         setIsDead(true)
         props.onDead?.(points)
 
-        haptic("error")
+        if (!props.isPreview) haptic("error")
 
         return { x: newX, y: deadBoundary }
       }

@@ -18,7 +18,7 @@ export const Card = (props: CardProps) => {
     <div className="relative p-6 bg-inversed/5 rounded-[40px] border border-inversed/5 flex-col gap-4 flex overflow-hidden">
       <div
         className={cn(
-          "absolute left-4 right-4 aspect-square bg-accent/25 rounded-full pointer-events-none bottom-0 translate-y-1/2 blur-[64px]",
+          "absolute left-4 right-4 aspect-square bg-accent/25 rounded-full pointer-events-none bottom-0 translate-y-1/2 blur-[64px] animate-fade-in",
           variant === "green" && "bg-accent/25",
           variant === "red" && "bg-[#FF0004] bg-opacity-25"
         )}
