@@ -1,3 +1,3 @@
 export const Controller = () => {
-  return <div className="bg-inversed rounded-full size-full" />
+  return <div className="bg-inversed rounded-lg size-full" />
 }

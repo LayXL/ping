@@ -31,15 +31,15 @@ export const useBallPosition = (
   useInterval(() => {
     if (isDead) return
 
-    let newX = x + xVelocity
-    let newY = y + yVelocity
+    let newX = x + xVelocity * multiplier
+    let newY = y + yVelocity * multiplier
 
-    if (newX <= 0) {
+    if (newX <= -gameConfig.ballSize / 2) {
       setXVelocity(-xVelocity)
-      newX = 0
+      newX = -gameConfig.ballSize / 2
     }
 
-    if (newX + gameConfig.ballSize >= boardWidth) {
+    if (newX >= boardWidth - gameConfig.ballSize) {
       setXVelocity(-xVelocity)
       newX = boardWidth - gameConfig.ballSize
     }

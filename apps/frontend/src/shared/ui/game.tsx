@@ -1,9 +1,9 @@
 import { motion } from "framer-motion"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useScrollLock } from "usehooks-ts"
 import { gameConfig } from "../../config"
-import { useBallPosition } from "../hooks/use-ball-position"
 import { useControllerPosition } from "../hooks/use-controller-position"
+import { useInterval } from "../hooks/use-interval"
 import { cn } from "../utils/cn"
 import { Controller } from "./controller"
 import { Points } from "./points"
@@ -26,32 +26,82 @@ export const Game = (props: GameProps) => {
     if (points >= 25) return 1.75
     if (points >= 10) return 1.5
     if (points >= 5) return 1.25
-
     return 1
   }, [points])
 
-  const [ballPosition] = useBallPosition(
-    {
-      board: boardRef.current,
-      controllerPosition,
-      isDead,
-      multiplier,
-    },
-    () => {
-      setPoints((points) => points + 1)
-    },
-    () => {
-      setIsDead(true)
-    }
-  )
+  const [ballPosition, setBallPosition] = useState({ x: 100, y: 100 })
+  const [speedX, setSpeedX] = useState(gameConfig.ballSpeed as number)
+  const [speedY, setSpeedY] = useState(gameConfig.ballSpeed as number)
 
-  // useDeath({ board: boardRef.current, ballPosition }, (val) => {
-  //   if (val !== isDead) setIsDead(val)
-  // })
+  useInterval(() => {
+    if (isDead) return
 
-  useEffect(() => {
-    if (isDead) props.onDead?.()
-  }, [isDead, props.onDead])
+    setBallPosition((prev) => {
+      const newX = prev.x + speedX * multiplier
+      const newY = prev.y + speedY * multiplier
+
+      const boardWidth =
+        boardRef.current?.clientWidth ?? Number.POSITIVE_INFINITY
+
+      const boardHeight =
+        boardRef.current?.clientHeight ?? Number.POSITIVE_INFINITY
+
+      const topBoundary = gameConfig.ballSize / 2
+
+      const rightBoundary = boardWidth - gameConfig.ballSize / 2
+
+      const leftBoundary = gameConfig.ballSize / 2
+
+      const deadBoundary =
+        boardHeight - gameConfig.controllerHeight - gameConfig.ballSize / 2
+
+      if (newX > rightBoundary) {
+        setSpeedX(-speedX)
+
+        return { x: rightBoundary, y: newY }
+      }
+
+      if (newX < leftBoundary) {
+        setSpeedX(-speedX)
+
+        return { x: leftBoundary, y: newY }
+      }
+
+      if (newY < topBoundary) {
+        setSpeedY(-speedY)
+
+        return { x: newX, y: topBoundary }
+      }
+
+      const isCollidingLeft =
+        newX > controllerPosition - gameConfig.ballSize / 2
+
+      const isCollidingRight =
+        newX <
+        controllerPosition + gameConfig.controllerSize + gameConfig.ballSize / 2
+
+      const controllerTopBoundary =
+        boardHeight - gameConfig.controllerHeight - gameConfig.ballSize / 2
+
+      if (newY > controllerTopBoundary && isCollidingLeft && isCollidingRight) {
+        setSpeedY(-speedY)
+
+        return {
+          x: newX,
+          y: controllerTopBoundary,
+        }
+      }
+
+      if (newY > deadBoundary) {
+        setIsDead(true)
+        props.onDead?.()
+
+        return { x: newX, y: deadBoundary }
+      }
+
+      return { x: newX, y: newY }
+    })
+  }, 1000 / 200)
 
   useScrollLock()
 
@@ -79,23 +129,26 @@ export const Game = (props: GameProps) => {
         <Controller />
       </div>
 
-      <motion.img
-        src="/skins/hamster.webp"
-        alt=""
-        className={cn("absolute transition-[width,height]")}
-        initial={{ rotate: 0 }}
-        animate={{ rotate: 360 }}
-        transition={{ repeat: Number.POSITIVE_INFINITY, duration: 10 }}
+      <motion.div
+        className="absolute bg-white"
         style={{
-          width: isDead ? 0 : gameConfig.ballSize,
-          height: isDead ? 0 : gameConfig.ballSize,
-
-          translateX: ballPosition.x,
-          translateY: ballPosition.y,
-
-          // transform: `translateX(${ballPosition.x}px) translateY(${ballPosition.y}px)`,
+          translateX: ballPosition.x - gameConfig.ballSize / 2,
+          translateY: ballPosition.y - gameConfig.ballSize / 2,
         }}
-      />
+      >
+        <motion.img
+          src="/skins/hamster.webp"
+          alt=""
+          className={cn("transition-[width,height]")}
+          initial={{ rotate: 0 }}
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Number.POSITIVE_INFINITY, duration: 10 }}
+          style={{
+            width: isDead ? 0 : gameConfig.ballSize,
+            height: isDead ? 0 : gameConfig.ballSize,
+          }}
+        />
+      </motion.div>
     </motion.div>
   )
 }
