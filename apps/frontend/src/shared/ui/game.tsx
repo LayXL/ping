@@ -85,6 +85,7 @@ export const Game = (props: GameProps) => {
 
       if (newY > controllerTopBoundary && isCollidingLeft && isCollidingRight) {
         setSpeedY(-speedY)
+        setPoints((points) => points + 1)
 
         return {
           x: newX,
