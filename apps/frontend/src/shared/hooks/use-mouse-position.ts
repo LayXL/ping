@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { isMobile } from "react-device-detect"
 
 type MousePosition = {
   x: number | null
@@ -33,8 +32,43 @@ export const useMousePosition = (mode: "both" | "bottom" | "top" = "both") => {
   const [startPos, setStartPos] = useState<MousePosition>({ x: 0, y: 0 })
 
   useEffect(() => {
-    const updateMousePosition = (ev: MouseEvent) => {
-      setPos({ x: ev.clientX, y: ev.clientY })
+    const updateMousePosition = (ev: MouseEvent | TouchEvent) => {
+      let clientX: number
+      let clientY: number
+
+      if (ev instanceof MouseEvent) {
+        clientX = ev.clientX
+        clientY = ev.clientY
+      } else if (ev instanceof TouchEvent && ev.touches.length > 0) {
+        clientX = ev.touches[0].clientX
+        clientY = ev.touches[0].clientY
+      } else {
+        return // Нет доступных данных касания
+      }
+
+      if (!isTouchInAllowedZone(mode, clientY)) return
+
+      if (ev instanceof MouseEvent) {
+        // Обработка для мыши
+        setPos({ x: clientX, y: clientY })
+      } else if (ev instanceof TouchEvent) {
+        // Обработка для касаний
+        if (
+          initialPos.x === null ||
+          startPos.x === null ||
+          initialPos.y === null ||
+          startPos.y === null
+        )
+          return
+
+        const deltaX = clientX - startPos.x
+        const deltaY = clientY - startPos.y
+
+        const x = initialPos.x + deltaX
+        const y = initialPos.y + deltaY
+
+        setPos({ x, y })
+      }
     }
 
     const updateStartPosition = (ev: PointerEvent) => {
@@ -44,40 +78,18 @@ export const useMousePosition = (mode: "both" | "bottom" | "top" = "both") => {
       setInitialPos(pos)
     }
 
-    const updateTouchPosition = (ev: PointerEvent) => {
-      if (
-        initialPos.x === null ||
-        startPos.x === null ||
-        initialPos.y === null ||
-        startPos.y === null
-      )
-        return
+    window.addEventListener("pointerdown", updateStartPosition)
+    window.addEventListener("touchmove", updateMousePosition)
+    window.addEventListener("mousemove", updateMousePosition)
 
-      if (!isTouchInAllowedZone(mode, ev.clientY)) return
-
-      const deltaX = ev.clientX - startPos.x
-      const deltaY = ev.clientY - startPos.y
-
-      const x = initialPos.x + deltaX
-      const y = initialPos.y + deltaY
-
-      setPos({ x, y })
-    }
-
-    if (!isMobile) {
-      window.addEventListener("mousemove", updateMousePosition)
-    } else {
-      window.addEventListener("pointerdown", updateStartPosition)
-      window.addEventListener("pointermove", updateTouchPosition)
-    }
+    document.body.style.touchAction = "none"
 
     return () => {
-      if (!isMobile) {
-        window.removeEventListener("mousemove", updateMousePosition)
-      } else {
-        window.removeEventListener("pointerdown", updateStartPosition)
-        window.removeEventListener("pointermove", updateTouchPosition)
-      }
+      window.removeEventListener("pointerdown", updateStartPosition)
+      window.removeEventListener("touchmove", updateMousePosition)
+      window.removeEventListener("mousemove", updateMousePosition)
+
+      document.body.style.touchAction = ""
     }
   }, [initialPos.x, initialPos.y, pos, startPos.x, startPos.y, mode])
 
