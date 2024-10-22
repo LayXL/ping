@@ -1,12 +1,14 @@
 import { GameWrapper } from "@/shared/ui/game-wrapper"
-import { useParams } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 
 export const Game = () => {
-  const params = useParams()
+  const location = useLocation()
 
   return (
     <div className="h-full pb-safe-area-bottom">
-      <GameWrapper mode={(params.mode ?? "classic") as "friend" | "classic"} />
+      <GameWrapper
+        mode={(location.state.mode ?? "classic") as "friend" | "classic"}
+      />
     </div>
   )
 }

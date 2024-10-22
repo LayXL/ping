@@ -8,6 +8,7 @@ type ButtonProps = {
   label?: string
   after?: ReactNode
   onClick?: () => void
+  onDisabled?: () => void
 }
 
 export const Button = (props: ButtonProps) => {
@@ -25,8 +26,8 @@ export const Button = (props: ButtonProps) => {
         props.disabled && "opacity-30 cursor-not-allowed"
       )}
       onClick={() => {
-        haptic("selection")
-        props.onClick?.()
+        if (!props.disabled) haptic("selection")
+        props.disabled ? props.onDisabled : props.onClick?.()
       }}
     >
       <p children={props.label} className="text-lg font-medium" />

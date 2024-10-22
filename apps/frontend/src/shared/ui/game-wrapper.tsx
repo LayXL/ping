@@ -22,7 +22,7 @@ export const GameWrapper = (props: { mode: "classic" | "friend" }) => {
   return (
     <div className="relative size-full flex flex-col">
       <Game
-        mode="friend"
+        mode={props.mode}
         onDead={(score) => {
           setState(ScreenState.GAME_OVER)
           setScore(score)

@@ -1,3 +1,4 @@
+import { useHaptic } from "@/shared/hooks/use-haptic"
 import { Button } from "@/shared/ui/button"
 import { Icon } from "@/shared/ui/icon"
 import { PrimitiveCard } from "@/shared/ui/primitive-card"
@@ -24,6 +25,8 @@ const modesDescription = {
 } as const
 
 export const GameModeSelect = (props: GameModeSelectProps) => {
+  const haptic = useHaptic()
+
   return (
     <div className="flex flex-col gap-4">
       <PrimitiveCard>
@@ -31,6 +34,8 @@ export const GameModeSelect = (props: GameModeSelectProps) => {
           <div className="flex items-center">
             <div
               onClick={() => {
+                haptic("selection")
+
                 const modes = Object.keys(modesDescription)
                 const i = modes.findIndex((key) => key === props.mode)
 
@@ -53,6 +58,8 @@ export const GameModeSelect = (props: GameModeSelectProps) => {
             />
             <div
               onClick={() => {
+                haptic("selection")
+
                 const modes = Object.keys(modesDescription)
                 const i = modes.findIndex((key) => key === props.mode)
 
