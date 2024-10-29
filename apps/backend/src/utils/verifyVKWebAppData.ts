@@ -5,12 +5,10 @@ export const verifyVKWebAppData = (vkInitData?: string | null): boolean => {
   const queryParams: { key: string; value: string }[] = []
 
   const processQueryParam = (key: string, value: string) => {
-    if (typeof value === "string") {
-      if (key === "sign") {
-        sign = value
-      } else if (key.startsWith("vk_")) {
-        queryParams.push({ key, value })
-      }
+    if (key === "sign") {
+      sign = value
+    } else if (key.startsWith("vk_")) {
+      queryParams.push({ key, value })
     }
   }
 

@@ -32,7 +32,7 @@ export const vkPayments = new Elysia().post(
 
     let response: Response | undefined = undefined
 
-    const isTestNotification = notification.includes("test")
+    // const isTestNotification = notification.includes("test")
 
     switch (notification) {
       case "get_item":
@@ -55,7 +55,7 @@ export const vkPayments = new Elysia().post(
           //
           // if (!user?.id) return error(500)
           //
-          // if (data.item_id === "premium" && status === "chargeable") {
+          // if (data.item_id === "start" && status === "chargeable") {
           //   const isPremium = await checkIsUserPremium(user.id)
           //
           //   if (isPremium) return error(500)
