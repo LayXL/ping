@@ -1,10 +1,15 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "ping",
   "type": "module",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "gen:icons": "turbo gen icons"
+    "gen:icons": "turbo gen icons",
+    "db:push": "cd packages/drizzle && bun run push",
+    "db:studio": "cd packages/drizzle && bunx drizzle-kit studio",
+    "db:migrate": "cd packages/drizzle && bun run migrate",
+    "db:generate": "cd packages/drizzle && bun run generate"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.3",
