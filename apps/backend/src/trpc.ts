@@ -1,7 +1,7 @@
 import { TRPCError, initTRPC } from "@trpc/server"
 import { db } from "drizzle"
 import { eq } from "drizzle-orm"
-import { users } from "drizzle/db/schema"
+import { users } from "drizzle/schema.ts"
 import { returnFirst } from "shared/returnFirst"
 import superjson from "superjson"
 import type { Context } from "./context"

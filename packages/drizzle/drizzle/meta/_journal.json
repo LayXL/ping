@@ -8,6 +8,20 @@
       "when": 1729934604348,
       "tag": "0000_low_black_panther",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1730213029302,
+      "tag": "0001_outgoing_shotgun",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1730213145665,
+      "tag": "0002_groovy_photon",
+      "breakpoints": true
     }
   ]
 }

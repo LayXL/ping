@@ -11,6 +11,7 @@ type GameModeSelectProps = {
   onPlay?: () => void
   mode: Mode
   onChangeMode?: (mode: Mode) => void
+  isLoading?: boolean
 }
 
 const modesDescription = {
@@ -96,7 +97,11 @@ export const GameModeSelect = (props: GameModeSelectProps) => {
       {props.mode === "friend" && !isMobile ? (
         <Button disabled label="Только на смартфоне" onClick={props.onPlay} />
       ) : (
-        <Button label="Играть" onClick={props.onPlay} />
+        <Button
+          loading={props.isLoading}
+          label="Играть"
+          onClick={props.onPlay}
+        />
       )}
 
       <p className="text-primary/75 font-medium text-sm text-center">

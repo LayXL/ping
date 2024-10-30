@@ -4,6 +4,7 @@ import { cn } from "../utils/cn"
 
 type ButtonProps = {
   disabled?: boolean
+  loading?: boolean
   variant?: "primary" | "secondary"
   label?: string
   after?: ReactNode
@@ -27,6 +28,8 @@ export const Button = (props: ButtonProps) => {
       )}
       onClick={() => {
         if (!props.disabled) haptic("selection")
+        if (props.loading) return haptic("selection")
+
         props.disabled ? props.onDisabled : props.onClick?.()
       }}
     >

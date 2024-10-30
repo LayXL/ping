@@ -1,4 +1,5 @@
 import { GameModeSelect } from "@/app/widgets/game-mode-select"
+import { trpc } from "@/shared/utils/trpc.ts"
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -12,7 +13,14 @@ enum ScreenState {
   GAME_OVER = 1,
 }
 
-export const GameWrapper = (props: { mode: "classic" | "friend" }) => {
+type GameWrapperProps = {
+  mode: "classic" | "friend"
+  id?: number
+}
+
+export const GameWrapper = (props: GameWrapperProps) => {
+  const endGameMutation = trpc.game.end.useMutation()
+
   const navigate = useNavigate()
   const haptic = useHaptic()
 
@@ -27,6 +35,13 @@ export const GameWrapper = (props: { mode: "classic" | "friend" }) => {
           setState(ScreenState.GAME_OVER)
           setScore(score)
           haptic("error")
+
+          if (props.id) {
+            endGameMutation.mutate({
+              gameId: props.id,
+              score,
+            })
+          }
         }}
         withOffset={state === ScreenState.GAME}
       />

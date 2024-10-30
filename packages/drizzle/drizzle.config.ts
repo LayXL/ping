@@ -6,8 +6,9 @@ if (!process.env.DB_URL) {
   throw new Error("DB_URL is not defined")
 }
 
+// noinspection JSUnusedGlobalSymbols
 export default defineConfig({
-  schema: "./db/schema.ts",
+  schema: "./schema.ts",
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
