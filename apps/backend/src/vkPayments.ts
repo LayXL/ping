@@ -55,7 +55,7 @@ export const vkPayments = new Elysia().post(
           //
           // if (!user?.id) return error(500)
           //
-          // if (data.item_id === "start" && status === "chargeable") {
+          // if (data.item_id === "_start" && status === "chargeable") {
           //   const isPremium = await checkIsUserPremium(user.id)
           //
           //   if (isPremium) return error(500)

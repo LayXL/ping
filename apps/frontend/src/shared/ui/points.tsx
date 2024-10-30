@@ -15,7 +15,7 @@ export const Points = (props: PointsProps) => {
     setDisplayValue(props.value)
 
     if (props.value > 0) {
-      // animationControls.start({ scale: [1.5, 1] })
+      // animationControls._start({ scale: [1.5, 1] })
     }
   }, [animationControls, props.value])
 

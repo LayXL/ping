@@ -4,7 +4,7 @@ import { and, eq, gte, sql } from "drizzle-orm"
 import { games, users } from "drizzle/schema.ts"
 import { returnFirst } from "shared/returnFirst.ts"
 import { z } from "zod"
-import { privateProcedure } from "../../../trpc.ts"
+import { privateProcedure } from "../../trpc.ts"
 
 const maxScoreToCredit = 100
 

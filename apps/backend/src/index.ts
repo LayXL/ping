@@ -1,6 +1,7 @@
 import { cors } from "@elysiajs/cors"
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
 import { Elysia } from "elysia"
+import { codegen } from "./codegen.ts"
 import { createContext } from "./context"
 import { router } from "./routes"
 import { vkPayments } from "./vkPayments"
@@ -24,4 +25,7 @@ export const app = new Elysia()
 
 console.info(`Server is running at ${app.server?.hostname}:${app.server?.port}`)
 
-// export const elysia = treaty<typeof app>("/")
+if (Bun.env.TEST === "true") {
+  // noinspection JSIgnoredPromiseFromCall
+  codegen()
+}
