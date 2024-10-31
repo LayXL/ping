@@ -1,7 +1,7 @@
 import { cors } from "@elysiajs/cors"
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
 import { Elysia } from "elysia"
-import { codegen } from "./codegen.ts"
+import { startWatcher } from "./codegen.ts"
 import { createContext } from "./context"
 import { router } from "./routes"
 import { vkPayments } from "./vkPayments"
@@ -27,5 +27,5 @@ console.info(`Server is running at ${app.server?.hostname}:${app.server?.port}`)
 
 if (Bun.env.TEST === "true") {
   // noinspection JSIgnoredPromiseFromCall
-  codegen()
+  startWatcher()
 }

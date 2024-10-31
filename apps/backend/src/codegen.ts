@@ -1,17 +1,13 @@
-import { readdirSync } from "node:fs"
+import { readdirSync, watch } from "node:fs"
 import path from "node:path"
 
-// export const startWatcher = () => {
-//   const watcher = watch(
-//     import.meta.dir,
-//     { recursive: true },
-//     (event, filename) => {
-//       if (filename?.startsWith("routes/")) codegen()
-//     }
-//   )
-//
-//   codegen()
-// }
+export const startWatcher = () => {
+  const watcher = watch(import.meta.dir, { recursive: true }, (_, filename) => {
+    if (filename?.startsWith("routes/")) codegen()
+  })
+
+  codegen()
+}
 
 export const codegen = async () => {
   console.info("Updating changes")

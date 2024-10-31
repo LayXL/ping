@@ -8,6 +8,7 @@ export const Game = () => {
     <div className="h-full pb-safe-area-bottom">
       <GameWrapper
         mode={(location.state.mode ?? "classic") as "friend" | "classic"}
+        id={Number(location.state.id)}
       />
     </div>
   )

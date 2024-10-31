@@ -23,7 +23,7 @@ export const end = privateProcedure
         .where(and(eq(games.id, input.gameId), eq(games.userId, ctx.user.id)))
         .then(returnFirst)
 
-      if (!game) return tx.rollback()
+      if (!game || game.terminatedAt) return tx.rollback()
 
       const todayCreditedScore = await tx
         .select()
@@ -58,6 +58,7 @@ export const end = privateProcedure
         .set({
           score: input.score,
           creditedScore,
+          terminatedAt: new Date(),
         })
         .where(and(eq(games.id, input.gameId), eq(games.userId, ctx.user.id)))
         .returning()
