@@ -12,7 +12,13 @@ export const Home = () => {
   const startGameMutation = trpc.game.start.useMutation({
     onSuccess: (data) => {
       if (!data) return
-      navigate("/game", { state: { mode, id: data.id } })
+      navigate("/game", {
+        state: {
+          mode,
+          id: data.id,
+          coinSpawnAt: data.nextCoinSpawnAt?.getTime(),
+        },
+      })
     },
   })
 

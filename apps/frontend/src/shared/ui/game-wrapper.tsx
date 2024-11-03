@@ -16,6 +16,7 @@ enum ScreenState {
 type GameWrapperProps = {
   mode: "classic" | "friend"
   id?: number
+  coinSpawnAt?: Date
 }
 
 export const GameWrapper = (props: GameWrapperProps) => {
@@ -44,6 +45,8 @@ export const GameWrapper = (props: GameWrapperProps) => {
           }
         }}
         withOffset={state === ScreenState.GAME}
+        gameId={props.id}
+        coinSpawnAt={props.coinSpawnAt}
       />
 
       <motion.div

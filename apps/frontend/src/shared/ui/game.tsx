@@ -1,6 +1,9 @@
 import { gameConfig } from "@/config"
+import { trpc } from "@/shared/utils/trpc.ts"
+import { addSeconds } from "date-fns/addSeconds"
 import { motion } from "framer-motion"
 import { useMemo, useRef, useState } from "react"
+import { getRandomNumber } from "shared/getRandomNumber.ts"
 import { useScrollLock } from "usehooks-ts"
 import { useControllerPosition } from "../hooks/use-controller-position"
 import { useHaptic } from "../hooks/use-haptic"
@@ -14,6 +17,8 @@ type GameProps = {
   withOffset?: boolean
   isPreview?: boolean
   points?: number
+  coinSpawnAt?: Date
+  gameId?: number
 }
 
 export const Game = (props: GameProps) => {
@@ -34,6 +39,29 @@ export const Game = (props: GameProps) => {
   const [ballPosition, setBallPosition] = useState({ x: 100, y: 100 })
   const [speedX, setSpeedX] = useState(gameConfig.ballSpeed as number)
   const [speedY, setSpeedY] = useState(gameConfig.ballSpeed as number)
+
+  const [coinSpawnAt, setCoinSpawnAt] = useState(props.coinSpawnAt)
+  const [coinIsActive, setCoinIsActive] = useState(false)
+  const [coinPosition, setCoinPosition] = useState({ x: 0, y: 0 })
+
+  const spawnCoin = trpc.game.spawnCoin.useMutation({
+    onSuccess: (data) => {
+      if (!data) return
+
+      setCoinIsActive(true)
+      setCoinPosition({
+        x: Math.random() * (boardRef.current?.clientWidth ?? 0),
+        y: 0,
+      })
+    },
+  })
+  const claimCoin = trpc.game.claimCoin.useMutation({
+    onSuccess: (data) => {
+      if (!data) return
+
+      setCoinSpawnAt(data.nextCoinSpawnAt)
+    },
+  })
 
   const controllerPosition = props.isPreview
     ? Math.max(
@@ -61,18 +89,58 @@ export const Game = (props: GameProps) => {
         )
       : useControllerPosition({ board: boardRef.current, mode: "top" })
 
+  const checkIsCollidingController = (
+    newX: number,
+    newY: number,
+    size: number,
+    controllerPosition: number,
+    position: "top" | "bottom",
+    isBall?: boolean
+  ) => {
+    const boardHeight =
+      boardRef.current?.clientHeight ?? Number.POSITIVE_INFINITY
+
+    const isCollidingLeft = newX > controllerPosition - size / 2
+
+    const isCollidingRight =
+      newX < controllerPosition + gameConfig.controllerSize + size / 2
+
+    const controllerBoundary =
+      position === "bottom"
+        ? boardHeight - gameConfig.controllerHeight - size / 2
+        : size
+
+    const cond =
+      position === "bottom"
+        ? newY > controllerBoundary
+        : newY < controllerBoundary
+
+    if (cond && isCollidingLeft && isCollidingRight) {
+      if (isBall) {
+        setSpeedY(-speedY)
+        if (!props.isPreview) setPoints((points) => points + 1)
+
+        if (!props.isPreview) haptic("impactMedium")
+      }
+
+      return {
+        x: newX,
+        y: controllerBoundary,
+      }
+    }
+  }
+
   useInterval(() => {
     if (isDead) return
+
+    const boardWidth = boardRef.current?.clientWidth ?? Number.POSITIVE_INFINITY
+
+    const boardHeight =
+      boardRef.current?.clientHeight ?? Number.POSITIVE_INFINITY
 
     setBallPosition((prev) => {
       const newX = prev.x + speedX * (props.isPreview ? 1 : multiplier)
       const newY = prev.y + speedY * (props.isPreview ? 1 : multiplier)
-
-      const boardWidth =
-        boardRef.current?.clientWidth ?? Number.POSITIVE_INFINITY
-
-      const boardHeight =
-        boardRef.current?.clientHeight ?? Number.POSITIVE_INFINITY
 
       const topBoundary = gameConfig.ballSize / 2
 
@@ -107,55 +175,25 @@ export const Game = (props: GameProps) => {
         return { x: newX, y: topBoundary }
       }
 
-      const checkIsCollidingController = (
-        controllerPosition: number,
-        position: "top" | "bottom"
-      ) => {
-        const isCollidingLeft =
-          newX > controllerPosition - gameConfig.ballSize / 2
-
-        const isCollidingRight =
-          newX <
-          controllerPosition +
-            gameConfig.controllerSize +
-            gameConfig.ballSize / 2
-
-        const controllerBoundary =
-          position === "bottom"
-            ? boardHeight -
-              gameConfig.controllerHeight -
-              gameConfig.ballSize / 2
-            : gameConfig.ballSize
-
-        const cond =
-          position === "bottom"
-            ? newY > controllerBoundary
-            : newY < controllerBoundary
-
-        if (cond && isCollidingLeft && isCollidingRight) {
-          setSpeedY(-speedY)
-          if (!props.isPreview) setPoints((points) => points + 1)
-
-          if (!props.isPreview) haptic("impactMedium")
-
-          return {
-            x: newX,
-            y: controllerBoundary,
-          }
-        }
-      }
-
       const bottomController = checkIsCollidingController(
+        newX,
+        newY,
+        gameConfig.ballSize,
         controllerPosition,
-        "bottom"
+        "bottom",
+        true
       )
 
       if (bottomController) return bottomController
 
       if (props.mode === "friend") {
         const topController = checkIsCollidingController(
+          newX,
+          newY,
+          gameConfig.ballSize,
           secondControllerPosition,
-          "top"
+          "top",
+          true
         )
 
         if (topController) return topController
@@ -175,9 +213,63 @@ export const Game = (props: GameProps) => {
 
       return { x: newX, y: newY }
     })
+
+    if (coinIsActive) {
+      setCoinPosition((prev) => {
+        const newY = prev.y + gameConfig.ballSpeed * multiplier
+
+        if (
+          checkIsCollidingController(
+            prev.x,
+            newY,
+            64,
+            controllerPosition,
+            "bottom"
+          )
+        ) {
+          setCoinIsActive(false)
+
+          if (spawnCoin.data?.uid && props.gameId)
+            claimCoin.mutate({
+              gameId: props.gameId,
+              uid: spawnCoin.data.uid,
+            })
+
+          return prev
+        }
+
+        const deadBoundary =
+          boardHeight - gameConfig.controllerHeight - gameConfig.ballSize / 2
+
+        if (newY > deadBoundary) {
+          setCoinIsActive(false)
+          setCoinSpawnAt((prev) =>
+            prev ? addSeconds(prev, getRandomNumber(2, 5)) : prev
+          )
+        }
+
+        return {
+          x: prev.x,
+          y: newY,
+        }
+      })
+    }
   }, 1000 / 200)
 
   useScrollLock()
+
+  useInterval(() => {
+    if (!coinSpawnAt || !props.gameId) return
+
+    if (
+      addSeconds(coinSpawnAt, 1).setMilliseconds(0) ===
+      new Date().setMilliseconds(0)
+    ) {
+      spawnCoin.mutate({
+        gameId: props.gameId,
+      })
+    }
+  }, 1000)
 
   return (
     <motion.div
@@ -246,6 +338,18 @@ export const Game = (props: GameProps) => {
             }}
           /> */}
         </motion.div>
+
+        <motion.img
+          animate={{
+            scale: coinIsActive && !isDead ? 1 : 0,
+          }}
+          src="/coin.svg"
+          className="absolute size-16"
+          style={{
+            translateX: coinPosition.x - 32,
+            translateY: coinPosition.y - 32,
+          }}
+        />
       </motion.div>
     </motion.div>
   )

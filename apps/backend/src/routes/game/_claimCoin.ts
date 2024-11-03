@@ -3,11 +3,11 @@ import { addSeconds } from "date-fns/addSeconds"
 import { db } from "drizzle"
 import { and, eq, isNull } from "drizzle-orm"
 import { gameCoins, games } from "drizzle/schema.ts"
+import { getRandomNumber } from "shared/getRandomNumber.ts"
 import { returnFirst } from "shared/returnFirst.ts"
 import { z } from "zod"
 import { privateProcedure } from "../../trpc.ts"
 import { addMoneyTransaction } from "../../utils/addMoney.ts"
-import { getRandomNumber } from "../../utils/getRandomNumber.ts"
 
 export const claimCoin = privateProcedure
   .input(
@@ -25,7 +25,7 @@ export const claimCoin = privateProcedure
 
     if (!game) throw new TRPCError({ code: "NOT_FOUND" })
 
-    await db.transaction(async (tx) => {
+    const nextSpawn = await db.transaction(async (tx) => {
       const coin = await tx
         .select()
         .from(gameCoins)
@@ -39,10 +39,12 @@ export const claimCoin = privateProcedure
 
       if (!coin) return tx.rollback()
 
+      const nextSpawn = addSeconds(new Date(), getRandomNumber(5, 8))
+
       await tx
         .update(games)
         .set({
-          nextCoinSpawnAt: addSeconds(new Date(), getRandomNumber(10, 15)),
+          nextCoinSpawnAt: nextSpawn,
         })
         .where(and(eq(games.id, input.gameId), eq(games.userId, ctx.user.id)))
 
@@ -56,5 +58,13 @@ export const claimCoin = privateProcedure
       await tx.transaction(
         addMoneyTransaction({ userId: ctx.user.id, money: 1 })
       )
+
+      return nextSpawn
     })
+
+    if (!nextSpawn) throw new TRPCError({ code: "BAD_REQUEST" })
+
+    return {
+      nextCoinSpawnAt: nextSpawn,
+    }
   })

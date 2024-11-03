@@ -9,6 +9,7 @@ export const Game = () => {
       <GameWrapper
         mode={(location.state.mode ?? "classic") as "friend" | "classic"}
         id={Number(location.state.id)}
+        coinSpawnAt={new Date(location.state.coinSpawnAt)}
       />
     </div>
   )

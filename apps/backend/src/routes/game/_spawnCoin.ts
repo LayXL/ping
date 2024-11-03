@@ -20,6 +20,8 @@ export const spawnCoin = privateProcedure
       .then(returnFirst)
 
     if (!game) throw new TRPCError({ code: "NOT_FOUND" })
+    if (game.terminatedAt || !game.nextCoinSpawnAt)
+      throw new TRPCError({ code: "BAD_REQUEST" })
 
     if (game.nextCoinSpawnAt > new Date())
       throw new TRPCError({ code: "BAD_REQUEST" })
@@ -31,5 +33,6 @@ export const spawnCoin = privateProcedure
         gameId: input.gameId,
         spawnedAt: new Date(),
       })
+      .returning()
       .then(returnFirst)
   })
