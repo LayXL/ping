@@ -31,15 +31,20 @@ export const games = pgTable("games", {
   creditedScore: integer("creditedScore").notNull().default(0),
   nextCoinSpawnAt: timestamp("nextCoinSpawnAt", {
     withTimezone: true,
-  }).notNull(),
+  }),
 })
 
-export const gameCoins = pgTable("gameCoins", {
-  uid: text("uid").primaryKey(),
-  gameId: integer("gameId")
-    .references(() => games.id)
-    .notNull()
-    .primaryKey(),
-  spawnedAt: timestamp("spawnedAt", { withTimezone: true }).notNull(),
-  claimedAt: timestamp("claimedAt", { withTimezone: true }),
-})
+export const gameCoins = pgTable(
+  "gameCoins",
+  {
+    uid: text("uid"),
+    gameId: integer("gameId")
+      .references(() => games.id)
+      .notNull(),
+    spawnedAt: timestamp("spawnedAt", { withTimezone: true }).notNull(),
+    claimedAt: timestamp("claimedAt", { withTimezone: true }),
+  },
+  (t) => ({
+    pk: [t.gameId, t.uid],
+  })
+)
