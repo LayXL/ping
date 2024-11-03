@@ -1,7 +1,7 @@
+import { gameConfig } from "@/config"
 import { motion } from "framer-motion"
 import { useMemo, useRef, useState } from "react"
 import { useScrollLock } from "usehooks-ts"
-import { gameConfig } from "../../config"
 import { useControllerPosition } from "../hooks/use-controller-position"
 import { useHaptic } from "../hooks/use-haptic"
 import { useInterval } from "../hooks/use-interval"
