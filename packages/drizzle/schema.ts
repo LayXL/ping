@@ -15,8 +15,9 @@ export const users = pgTable("users", {
 export const userCoins = pgTable("userCoins", {
   userId: integer("userId")
     .references(() => users.id)
-    .notNull(),
-  coin: integer("coin").notNull().default(0),
+    .notNull()
+    .primaryKey(),
+  value: integer("value").notNull().default(0),
 })
 
 export const games = pgTable("games", {
@@ -28,11 +29,17 @@ export const games = pgTable("games", {
   terminatedAt: timestamp("terminatedAt", { withTimezone: true }),
   score: integer("score").notNull().default(0),
   creditedScore: integer("creditedScore").notNull().default(0),
+  nextCoinSpawnAt: timestamp("nextCoinSpawnAt", {
+    withTimezone: true,
+  }).notNull(),
 })
 
-export const claimedCoins = pgTable("claimedCoins", {
+export const gameCoins = pgTable("gameCoins", {
+  uid: text("uid").primaryKey(),
   gameId: integer("gameId")
     .references(() => games.id)
-    .notNull(),
-  claimedAt: timestamp("claimedAt", { withTimezone: true }).defaultNow(),
+    .notNull()
+    .primaryKey(),
+  spawnedAt: timestamp("spawnedAt", { withTimezone: true }).notNull(),
+  claimedAt: timestamp("claimedAt", { withTimezone: true }),
 })
