@@ -1,8 +1,8 @@
-import { useHaptic } from "@/shared/hooks/use-haptic"
-import { Button } from "@/shared/ui/button"
-import { Icon } from "@/shared/ui/icon"
-import { PrimitiveCard } from "@/shared/ui/primitive-card"
-import { cn } from "@/shared/utils/cn"
+import { useHaptic } from "@/shared/hooks/use-haptic.ts"
+import { Button } from "@/shared/ui/button.tsx"
+import { Icon } from "@/shared/ui/icon.tsx"
+import { PrimitiveCard } from "@/shared/ui/primitive-card.tsx"
+import { cn } from "@/shared/utils/cn.ts"
 import { isMobile } from "react-device-detect"
 
 type Mode = "classic" | "friend"

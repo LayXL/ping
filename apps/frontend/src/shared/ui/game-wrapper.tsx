@@ -1,5 +1,5 @@
-import { GameModeSelect } from "@/app/widgets/game-mode-select"
 import { trpc } from "@/shared/utils/trpc.ts"
+import { GameModeSelect } from "@/widgets/game-mode-select"
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
