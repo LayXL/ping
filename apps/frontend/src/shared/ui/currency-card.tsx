@@ -17,6 +17,7 @@ export const CurrencyCard = (props: CurrencyCardProps) => {
       )}
     >
       <img
+        draggable={false}
         src={`/icons/${props.currency === "coins" ? "coin" : "rank"}.svg`}
         alt=""
         className="size-6 cardShadow"

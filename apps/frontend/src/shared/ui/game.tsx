@@ -340,9 +340,8 @@ export const Game = (props: GameProps) => {
         </motion.div>
 
         <motion.img
-          animate={{
-            scale: coinIsActive && !isDead ? 1 : 0,
-          }}
+          initial={{ scale: 0 }}
+          animate={{ scale: coinIsActive && !isDead ? 1 : 0 }}
           src="/coin.svg"
           className="absolute size-16"
           style={{

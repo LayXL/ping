@@ -26,7 +26,7 @@ export const Home = () => {
   return (
     <div className="h-full flex flex-col pb-safe-area-bottom">
       <Header />
-      <div className="flex-1 p-4 flex flex-col gap-4">
+      <div className="flex-1 p-4 pt-0 flex flex-col gap-4">
         <div className="flex-1 -m-4 mb-0">
           <Game key={mode} mode={mode} isPreview />
         </div>
