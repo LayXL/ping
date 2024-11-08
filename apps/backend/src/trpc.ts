@@ -46,17 +46,13 @@ export const privateProcedure = t.procedure.use(async (opts) => {
   if (!userData) {
     userData = (await db
       .insert(users)
-      .values({
-        vkId: queryData.userId,
-      })
+      .values({ vkId: queryData.userId })
       .returning()
       .then(returnFirst)) as NonNullable<typeof userData>
   } else {
     await db
       .update(users)
-      .set({
-        latestActivityAt: new Date(),
-      })
+      .set({ latestActivityAt: new Date() })
       .where(eq(users.id, userData.id))
   }
 
@@ -67,15 +63,15 @@ export const privateProcedure = t.procedure.use(async (opts) => {
   })
 })
 
-export const adminProcedure = privateProcedure.use(async (opts) => {
-  // TODO: rework
-  const isAdmin = false
-
-  if (!isAdmin) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-    })
-  }
-
-  return opts.next(opts)
-})
+// export const adminProcedure = privateProcedure.use(async (opts) => {
+//   // TODO: rework
+//   const isAdmin = false
+//
+//   if (!isAdmin) {
+//     throw new TRPCError({
+//       code: "UNAUTHORIZED",
+//     })
+//   }
+//
+//   return opts.next(opts)
+// })

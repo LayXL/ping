@@ -2,8 +2,9 @@ import { tv } from "tailwind-variants"
 
 const leaderCard = tv({
   slots: {
-    base: "rounded-3xl p-px border-[3px] flex gap-4",
-    place: "border-[3px] border-white size-8 bg-gradient-to-br rounded-full",
+    base: "rounded-3xl p-4 border-[3px] flex gap-4 items-center",
+    place:
+      "border-[3px] border-white size-8 bg-gradient-to-br rounded-full text-center font-bold text-sm cardShadow",
   },
   variants: {
     place: {
@@ -30,7 +31,6 @@ const leaderCard = tv({
       },
     },
   },
-
   defaultVariants: {
     place: "other",
     isPinned: false,
@@ -52,7 +52,19 @@ export const LeaderCard = (props: LeaderCardProps) => {
 
   return (
     <div className={base()}>
-      <div className={place()}>123</div>
+      <div className={place()}>1</div>
+      <div className={"flex flex-1 gap-[10px] items-center"}>
+        <img
+          src={props.avatarUrl}
+          alt={""}
+          className={"size-12 rounded-full border border-inversed/30"}
+        />
+        <p className={"font-semibold"} children={props.name} />
+      </div>
+      <div className={"flex gap-1.5 items-center"}>
+        <p className={"font-semibold text-lg"} children={props.score} />
+        <img className={"cardShadow"} src={"/icons/rank.svg"} alt={""} />
+      </div>
     </div>
   )
 }

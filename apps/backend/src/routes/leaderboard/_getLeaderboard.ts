@@ -39,7 +39,8 @@ export const getLeaderboard = privateProcedure
         users.map((user) => ({
           id: user.id,
           displayName: user.displayName,
-          creditedScore: user.creditedScore,
+          score: user.creditedScore,
+          // avatar: user.
         }))
       )
   })
