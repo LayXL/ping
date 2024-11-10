@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom"
 
 export const Home = () => {
   const navigate = useNavigate()
+  const selectedSkin = trpc.shop.getSelectedSkin.useQuery()
 
   trpc.user.updateData.useQuery(undefined, {
     staleTime: Number.POSITIVE_INFINITY,
@@ -32,7 +33,12 @@ export const Home = () => {
       <Header />
       <div className="flex-1 p-4 pt-0 flex flex-col gap-4">
         <div className="flex-1 -m-4 mb-0">
-          <Game key={mode} mode={mode} isPreview />
+          <Game
+            key={mode}
+            mode={mode}
+            isPreview
+            skin={selectedSkin.data ?? "default"}
+          />
         </div>
 
         <GameModeSelect

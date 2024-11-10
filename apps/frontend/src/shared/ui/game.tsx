@@ -1,4 +1,6 @@
 import { gameConfig } from "@/config"
+import { Animation } from "@/shared/ui/animation.tsx"
+import { cn } from "@/shared/utils/cn.ts"
 import { trpc } from "@/shared/utils/trpc.ts"
 import { addSeconds } from "date-fns/addSeconds"
 import { motion } from "framer-motion"
@@ -19,11 +21,14 @@ type GameProps = {
   points?: number
   coinSpawnAt?: Date
   gameId?: number
+  skin?: string
 }
 
 export const Game = (props: GameProps) => {
   const haptic = useHaptic()
   const boardRef = useRef<HTMLDivElement>(null)
+
+  const skin = props.skin ?? "default"
 
   const [points, setPoints] = useState(props.points ?? 0)
   const [isDead, setIsDead] = useState(false)
@@ -313,7 +318,10 @@ export const Game = (props: GameProps) => {
         )}
 
         <motion.div
-          className="absolute bg-white rounded-full"
+          className={cn(
+            "absolute",
+            skin === "default" && "bg-white rounded-full"
+          )}
           animate={{
             scale: isDead ? 0 : 1,
             opacity: isDead ? 0 : 1,
@@ -325,18 +333,23 @@ export const Game = (props: GameProps) => {
             translateY: ballPosition.y - gameConfig.ballSize / 2,
           }}
         >
-          {/* <motion.img
-            src="/skins/hamster.webp"
-            alt=""
-            className={cn("transition-[width,height]")}
-            initial={{ rotate: 0 }}
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Number.POSITIVE_INFINITY, duration: 10 }}
-            style={{
-              width: isDead ? 0 : gameConfig.ballSize,
-              height: isDead ? 0 : gameConfig.ballSize,
-            }}
-          /> */}
+          {skin === "hamster" && (
+            <motion.div
+              initial={{ rotate: 0 }}
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 10,
+                repeat: Number.POSITIVE_INFINITY,
+              }}
+            >
+              <Animation
+                loop
+                width={"100%"}
+                height={"100%"}
+                animation={"/skins/hamster.json"}
+              />
+            </motion.div>
+          )}
         </motion.div>
 
         <motion.img

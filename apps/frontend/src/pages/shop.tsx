@@ -1,5 +1,6 @@
 import { useHaptic } from "@/shared/hooks/use-haptic.ts"
 import { Button } from "@/shared/ui/button.tsx"
+import { Game } from "@/shared/ui/game.tsx"
 import { Icon } from "@/shared/ui/icon.tsx"
 import { PrimitiveCard } from "@/shared/ui/primitive-card.tsx"
 import { cn } from "@/shared/utils/cn.ts"
@@ -68,7 +69,12 @@ export const Shop = () => {
   return (
     <div className="h-full flex flex-col pb-safe-area-bottom">
       <Header />
+
       <div className="flex-1 p-4 pt-0 flex flex-col gap-4">
+        <div className="flex-1 -m-4 mb-0">
+          <Game mode={"classic"} isPreview skin={displayItems[currentItem]} />
+        </div>
+
         <PrimitiveCard>
           <div className="p-6 flex flex-col gap-4">
             <div className="flex items-center">

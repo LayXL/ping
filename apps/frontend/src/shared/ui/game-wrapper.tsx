@@ -20,6 +20,7 @@ type GameWrapperProps = {
 }
 
 export const GameWrapper = (props: GameWrapperProps) => {
+  const selectedSkin = trpc.shop.getSelectedSkin.useQuery()
   const endGameMutation = trpc.game.end.useMutation()
 
   const navigate = useNavigate()
@@ -47,6 +48,7 @@ export const GameWrapper = (props: GameWrapperProps) => {
         withOffset={state === ScreenState.GAME}
         gameId={props.id}
         coinSpawnAt={props.coinSpawnAt}
+        skin={selectedSkin.data ?? "default"}
       />
 
       <motion.div
