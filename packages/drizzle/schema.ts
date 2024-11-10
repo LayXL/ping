@@ -13,6 +13,7 @@ export const users = pgTable("users", {
   createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow(),
   score: integer("score").notNull().default(0),
   creditedScore: integer("creditedScore").notNull().default(0),
+  selectedSkin: text("selectedSkin").notNull().default("default"),
 })
 
 export const userCoins = pgTable("userCoins", {
@@ -49,5 +50,26 @@ export const gameCoins = pgTable(
   },
   (t) => ({
     pk: [t.gameId, t.uid],
+  })
+)
+
+export const shopItems = pgTable("shopItems", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  price: integer("price").notNull(),
+})
+
+export const userShopItems = pgTable(
+  "userShopItems",
+  {
+    userId: integer("userId")
+      .references(() => users.id)
+      .notNull(),
+    itemId: integer("itemId")
+      .references(() => shopItems.id)
+      .notNull(),
+  },
+  (t) => ({
+    pk: [t.userId, t.itemId],
   })
 )
