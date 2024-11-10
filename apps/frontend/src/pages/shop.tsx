@@ -115,6 +115,27 @@ export const Shop = () => {
                 />
               </div>
             </div>
+            <div className="flex flex-col gap-[2px] items-center bg-primary/30 border border-inversed/5 rounded-2xl p-6">
+              <div className="flex gap-1.5 items-center">
+                {currentItem === 0 ? (
+                  <p className="font-semibold text-lg" children={"Бесплатно"} />
+                ) : (
+                  <>
+                    <p
+                      className="font-semibold text-lg"
+                      children={shopItems.data?.[currentItem - 1]?.price}
+                    />
+                    <img
+                      draggable={false}
+                      src="/icons/coin.svg"
+                      alt=""
+                      className="size-6 cardShadow"
+                    />
+                  </>
+                )}
+              </div>
+              <p className="text-xs text-primary/30" children="Стоимость" />
+            </div>
           </div>
         </PrimitiveCard>
 
