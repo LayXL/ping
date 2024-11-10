@@ -31,8 +31,6 @@ export const selectSkin = privateProcedure
 
     await db
       .update(users)
-      .set({
-        selectedSkin: item?.name ?? "default",
-      })
+      .set({ selectedSkin: item?.name ?? "default" })
       .where(eq(users.id, ctx.user.id))
   })
