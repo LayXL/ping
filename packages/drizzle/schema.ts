@@ -4,6 +4,9 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   vkId: integer("vkId").unique(),
   displayName: text("displayName"),
+  firstName: text("firstName"),
+  lastName: text("lastName"),
+  avatarUrl: text("avatarUrl"),
   latestActivityAt: timestamp("latestActivity", { withTimezone: true })
     .defaultNow()
     .notNull(),

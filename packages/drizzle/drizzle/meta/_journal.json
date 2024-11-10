@@ -36,6 +36,20 @@
       "when": 1730632056935,
       "tag": "0004_organic_ted_forrester",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1731061172932,
+      "tag": "0005_magical_talon",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1731061301309,
+      "tag": "0006_pretty_silver_sable",
+      "breakpoints": true
     }
   ]
 }

@@ -4,7 +4,7 @@ const leaderCard = tv({
   slots: {
     base: "rounded-3xl p-4 border-[3px] flex gap-4 items-center",
     place:
-      "border-[3px] border-white size-8 bg-gradient-to-br rounded-full text-center font-bold text-sm cardShadow",
+      "border-[3px] border-white size-8 bg-gradient-to-br rounded-full grid place-items-center font-bold text-sm cardShadow",
   },
   variants: {
     place: {
@@ -41,7 +41,7 @@ type LeaderCardProps = {
   place: number
   score: number
   name: string
-  avatarUrl?: string
+  avatarUrl?: string | null
 }
 
 export const LeaderCard = (props: LeaderCardProps) => {
@@ -52,13 +52,19 @@ export const LeaderCard = (props: LeaderCardProps) => {
 
   return (
     <div className={base()}>
-      <div className={place()}>1</div>
+      <div className={place()}>
+        <span>{props.place}</span>
+      </div>
       <div className={"flex flex-1 gap-[10px] items-center"}>
-        <img
-          src={props.avatarUrl}
-          alt={""}
-          className={"size-12 rounded-full border border-inversed/30"}
-        />
+        {props.avatarUrl ? (
+          <img
+            src={props.avatarUrl}
+            alt={""}
+            className={"size-12 rounded-full border border-inversed/30"}
+          />
+        ) : (
+          <div className={"size-12 rounded-full bg-inversed/30"} />
+        )}
         <p className={"font-semibold"} children={props.name} />
       </div>
       <div className={"flex gap-1.5 items-center"}>

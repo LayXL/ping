@@ -80,7 +80,10 @@ export const Leaderboard = () => {
             >
               <div className={"flex flex-1 flex-col gap-0.5 items-center"}>
                 <div className={"flex gap-1.5"}>
-                  <p className={"font-semibold text-lg"} children={0} />
+                  <p
+                    className={"font-semibold text-lg"}
+                    children={currentLeagueData?.from}
+                  />
                   <img
                     src={"/icons/rank.svg"}
                     alt={""}
@@ -92,7 +95,10 @@ export const Leaderboard = () => {
               <div className={"w-px bg-inversed/30 rounded-full"} />
               <div className={"flex flex-1 flex-col gap-0.5 items-center"}>
                 <div className={"flex gap-1.5"}>
-                  <p className={"font-semibold text-lg"} children={0} />
+                  <p
+                    className={"font-semibold text-lg"}
+                    children={currentLeagueData?.to}
+                  />
                   <img
                     src={"/icons/rank.svg"}
                     alt={""}
@@ -124,6 +130,7 @@ export const Leaderboard = () => {
             place={1}
             name={leader.displayName ?? ""}
             score={leader.score}
+            avatarUrl={leader.avatarUrl}
           />
         ))}
 

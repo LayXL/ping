@@ -8,6 +8,10 @@ import { useNavigate } from "react-router-dom"
 export const Home = () => {
   const navigate = useNavigate()
 
+  trpc.user.updateData.useQuery(undefined, {
+    staleTime: Number.POSITIVE_INFINITY,
+  })
+
   const [mode, setMode] = useState<"classic" | "friend">("classic")
 
   const startGameMutation = trpc.game.start.useMutation({
