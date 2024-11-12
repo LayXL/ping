@@ -1,97 +1,153 @@
 import { useEffect, useState } from "react"
 
+type TouchPoint = {
+  id: number
+  x: number
+  y: number
+}
+
 type MousePosition = {
   x: number | null
   y: number | null
+  touches: TouchPoint[]
+}
+
+type TouchStartPosition = {
+  id: number
+  startX: number
+  startY: number
+  initialX: number
+  initialY: number
 }
 
 const isTouchInAllowedZone = (mode: "top" | "bottom" | "both", y: number) => {
   const screenHeight = window.innerHeight
-
   if (mode === "top") {
     return y <= screenHeight / 2
   }
-
   if (mode === "bottom") {
     return y > screenHeight / 2
   }
-
   return true
 }
 
-export const useMousePosition = (mode: "both" | "bottom" | "top" = "both") => {
+export const useMousePosition = (
+  mode: "both" | "bottom" | "top" = "both",
+  disabled = false
+) => {
   const [pos, setPos] = useState<MousePosition>({
     x: document.body.clientWidth / 2,
     y: 0,
+    touches: [],
   })
-
-  const [initialPos, setInitialPos] = useState<MousePosition>({
-    x: null,
-    y: null,
-  })
-  const [startPos, setStartPos] = useState<MousePosition>({ x: 0, y: 0 })
+  const [touchStartPositions, setTouchStartPositions] = useState<
+    TouchStartPosition[]
+  >([])
 
   useEffect(() => {
-    const updateMousePosition = (ev: MouseEvent | TouchEvent) => {
-      let clientX: number
-      let clientY: number
-
-      if (ev instanceof MouseEvent) {
-        clientX = ev.clientX
-        clientY = ev.clientY
-      } else if (ev instanceof TouchEvent && ev.touches.length > 0) {
-        clientX = ev.touches[0].clientX
-        clientY = ev.touches[0].clientY
-      } else {
-        return // Нет доступных данных касания
-      }
-
-      if (!isTouchInAllowedZone(mode, clientY)) return
-
-      if (ev instanceof MouseEvent) {
-        // Обработка для мыши
-        setPos({ x: clientX, y: clientY })
-      } else if (ev instanceof TouchEvent) {
-        // Обработка для касаний
-        if (
-          initialPos.x === null ||
-          startPos.x === null ||
-          initialPos.y === null ||
-          startPos.y === null
-        )
-          return
-
-        const deltaX = clientX - startPos.x
-        const deltaY = clientY - startPos.y
-
-        const x = initialPos.x + deltaX
-        const y = initialPos.y + deltaY
-
-        setPos({ x, y })
-      }
-    }
-
-    const updateStartPosition = (ev: PointerEvent) => {
+    const updateMousePosition = (ev: MouseEvent) => {
       if (!isTouchInAllowedZone(mode, ev.clientY)) return
-
-      setStartPos({ x: ev.clientX, y: ev.clientY })
-      setInitialPos(pos)
+      setPos((prev) => ({
+        ...prev,
+        x: ev.clientX,
+        y: ev.clientY,
+      }))
     }
 
-    window.addEventListener("pointerdown", updateStartPosition)
-    window.addEventListener("touchmove", updateMousePosition)
-    window.addEventListener("mousemove", updateMousePosition)
+    const handleTouchMove = (ev: TouchEvent) => {
+      ev.preventDefault()
+      const newTouches: TouchPoint[] = []
 
-    document.body.style.touchAction = "none"
+      for (let i = 0; i < ev.touches.length; i++) {
+        const touch = ev.touches[i]
+        if (!isTouchInAllowedZone(mode, touch.clientY)) continue
+
+        const startPosition = touchStartPositions.find(
+          (start) => start.id === touch.identifier
+        )
+
+        if (startPosition) {
+          const deltaX = touch.clientX - startPosition.startX
+          const deltaY = touch.clientY - startPosition.startY
+          const x = startPosition.initialX + deltaX
+          const y = startPosition.initialY + deltaY
+
+          newTouches.push({
+            id: touch.identifier,
+            x,
+            y,
+          })
+        }
+      }
+
+      setPos((prev) => ({
+        ...prev,
+        touches: newTouches,
+        // Update primary position to the first touch point if available
+        ...(newTouches.length > 0 && {
+          x: newTouches[0].x,
+          y: newTouches[0].y,
+        }),
+      }))
+    }
+
+    const handleTouchStart = (ev: TouchEvent) => {
+      ev.preventDefault()
+      const newStartPositions: TouchStartPosition[] = []
+
+      for (let i = 0; i < ev.touches.length; i++) {
+        const touch = ev.touches[i]
+        if (!isTouchInAllowedZone(mode, touch.clientY)) continue
+
+        newStartPositions.push({
+          id: touch.identifier,
+          startX: touch.clientX,
+          startY: touch.clientY,
+          initialX: pos.x ?? touch.clientX,
+          initialY: pos.y ?? touch.clientY,
+        })
+      }
+
+      setTouchStartPositions(newStartPositions)
+    }
+
+    const handleTouchEnd = (ev: TouchEvent) => {
+      ev.preventDefault()
+      // Remove ended touch points from tracking
+      const remainingIds = Array.from(ev.touches).map(
+        (touch) => touch.identifier
+      )
+      setTouchStartPositions((prev) =>
+        prev.filter((pos) => remainingIds.includes(pos.id))
+      )
+      setPos((prev) => ({
+        ...prev,
+        touches: prev.touches.filter((touch) =>
+          remainingIds.includes(touch.id)
+        ),
+      }))
+    }
+
+    if (!disabled) {
+      window.addEventListener("touchstart", handleTouchStart)
+      window.addEventListener("touchmove", handleTouchMove)
+      window.addEventListener("touchend", handleTouchEnd)
+      window.addEventListener("touchcancel", handleTouchEnd)
+      window.addEventListener("mousemove", updateMousePosition)
+      document.body.style.touchAction = "none"
+    }
 
     return () => {
-      window.removeEventListener("pointerdown", updateStartPosition)
-      window.removeEventListener("touchmove", updateMousePosition)
-      window.removeEventListener("mousemove", updateMousePosition)
-
-      document.body.style.touchAction = ""
+      if (!disabled) {
+        window.removeEventListener("touchstart", handleTouchStart)
+        window.removeEventListener("touchmove", handleTouchMove)
+        window.removeEventListener("touchend", handleTouchEnd)
+        window.removeEventListener("touchcancel", handleTouchEnd)
+        window.removeEventListener("mousemove", updateMousePosition)
+        document.body.style.touchAction = ""
+      }
     }
-  }, [initialPos.x, initialPos.y, pos, startPos.x, startPos.y, mode])
+  }, [mode, pos.x, pos.y, touchStartPositions, disabled])
 
   return pos
 }

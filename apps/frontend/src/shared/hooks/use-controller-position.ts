@@ -5,8 +5,13 @@ import { useMousePosition } from "./use-mouse-position"
 export const useControllerPosition = ({
   board,
   mode = "both",
-}: { board: HTMLDivElement | null; mode: "bottom" | "top" | "both" }) => {
-  const pos = useMousePosition(mode).x
+  disabled = false,
+}: {
+  board: HTMLDivElement | null
+  mode: "bottom" | "top" | "both"
+  disabled?: boolean
+}) => {
+  const pos = useMousePosition(mode, disabled).x
 
   const controllerTranslation = useMemo(() => {
     return pos && board?.clientWidth ? pos / board.clientWidth : 0

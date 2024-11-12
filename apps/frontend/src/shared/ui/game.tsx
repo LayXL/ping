@@ -80,6 +80,7 @@ export const Game = (props: GameProps) => {
     : useControllerPosition({
         board: boardRef.current,
         mode: props.mode === "friend" ? "bottom" : "both",
+        disabled: isDead,
       })
 
   const secondControllerPosition =
@@ -93,7 +94,13 @@ export const Game = (props: GameProps) => {
           ),
           16
         )
-      : useControllerPosition({ board: boardRef.current, mode: "top" })
+      : props.isPreview
+        ? false
+        : useControllerPosition({
+            board: boardRef.current,
+            mode: "top",
+            disabled: isDead,
+          })
 
   const checkIsCollidingController = (
     newX: number,
@@ -196,7 +203,7 @@ export const Game = (props: GameProps) => {
 
       if (bottomController) return bottomController
 
-      if (props.mode === "friend") {
+      if (props.mode === "friend" && secondControllerPosition) {
         const topController = checkIsCollidingController(
           newX,
           newY,
