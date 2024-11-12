@@ -1,5 +1,5 @@
 version: "3.5"
-name: cover-generator
+name: ping
 services:
   server:
     restart: always
