@@ -22,6 +22,7 @@ type GameProps = {
   coinSpawnAt?: Date
   gameId?: number
   skin?: string
+  speed?: number
 }
 
 export const Game = (props: GameProps) => {
@@ -144,8 +145,12 @@ export const Game = (props: GameProps) => {
       boardRef.current?.clientHeight ?? Number.POSITIVE_INFINITY
 
     setBallPosition((prev) => {
-      const newX = prev.x + speedX * (props.isPreview ? 1 : multiplier)
-      const newY = prev.y + speedY * (props.isPreview ? 1 : multiplier)
+      const newX =
+        prev.x +
+        speedX * (props.isPreview ? 1 : multiplier) * (props.speed ?? 1)
+      const newY =
+        prev.y +
+        speedY * (props.isPreview ? 1 : multiplier) * (props.speed ?? 1)
 
       const topBoundary = gameConfig.ballSize / 2
 
@@ -221,7 +226,7 @@ export const Game = (props: GameProps) => {
 
     if (coinIsActive) {
       setCoinPosition((prev) => {
-        const newY = prev.y + gameConfig.ballSpeed * multiplier
+        const newY = prev.y + gameConfig.ballSpeed
 
         if (
           checkIsCollidingController(
@@ -259,7 +264,7 @@ export const Game = (props: GameProps) => {
         }
       })
     }
-  }, 1000 / 200)
+  }, 1000 / 90)
 
   useScrollLock()
 

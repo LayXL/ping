@@ -72,7 +72,12 @@ export const Shop = () => {
 
       <div className="flex-1 p-4 pt-0 flex flex-col gap-4">
         <div className="flex-1 -m-4 mb-0">
-          <Game mode={"classic"} isPreview skin={displayItems[currentItem]} />
+          <Game
+            mode={"classic"}
+            isPreview
+            speed={0.5}
+            skin={displayItems[currentItem]}
+          />
         </div>
 
         <PrimitiveCard>
