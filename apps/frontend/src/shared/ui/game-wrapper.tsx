@@ -1,5 +1,6 @@
 import { trpc } from "@/shared/utils/trpc.ts"
 import { GameModeSelect } from "@/widgets/game-mode-select"
+import bridge from "@vkontakte/vk-bridge"
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -7,6 +8,15 @@ import { useHaptic } from "../hooks/use-haptic"
 import { Button } from "./button"
 import { Card } from "./card"
 import { Game } from "./game"
+
+function declensionWord(count: number, words: string[]) {
+  const cases = [2, 0, 1, 1, 1, 2]
+  const index =
+    count % 100 > 4 && count % 100 < 20
+      ? 2
+      : cases[count % 10 < 5 ? count % 10 : 5]
+  return `${count} ${words[index]}`
+}
 
 enum ScreenState {
   GAME = 0,
@@ -82,14 +92,15 @@ export const GameWrapper = (props: GameWrapperProps) => {
           />
           <div className="flex flex-col gap-2">
             <Button label="Продолжить" onClick={() => navigate("/")} />
-            {/* <Button
+            <Button
               variant="secondary"
               label="Поделиться"
               onClick={() => {
-                // TODO
-                navigate("/")
+                bridge.send("VKWebAppShowWallPostBox", {
+                  message: `Мои результат в игре — ${declensionWord(score, ["балл", "балла", "баллов"])}!`,
+                })
               }}
-            /> */}
+            />
           </div>
           <p className="text-primary/75 font-medium text-sm text-center">
             Поделитесь результатом с друзьями
