@@ -97,7 +97,7 @@ export const GameWrapper = (props: GameWrapperProps) => {
               label="Поделиться"
               onClick={() => {
                 bridge.send("VKWebAppShowWallPostBox", {
-                  message: `Мои результат в игре — ${declensionWord(score, ["балл", "балла", "баллов"])}!`,
+                  message: `Мой результат в игре — ${declensionWord(score, ["балл", "балла", "баллов"])}!`,
                 })
               }}
             />
