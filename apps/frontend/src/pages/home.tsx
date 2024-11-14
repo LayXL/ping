@@ -36,7 +36,7 @@ export const Home = () => {
         {mode === "classic" && (
           <div className={"fixed w-full pt-3 left-0"}>
             <p className="text-center text-sm font-medium opacity-50">
-              Вы получили {remainingScore.data?.creditedScore ?? 100}/100 баллов
+              Вы получили {remainingScore.data?.remainingScore ?? 0}/100 баллов
               сегодня
             </p>
           </div>
