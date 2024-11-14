@@ -19,7 +19,7 @@ export const Leaderboard = () => {
   })
 
   return (
-    <div className="h-full flex flex-col pb-safe-area-bottom">
+    <div className="h-full flex flex-col pb-safe-area-bottom overflow-scroll">
       <Header />
       <div className={"flex flex-col gap-4 p-4"}>
         <PrimitiveCard color={currentLeagueData?.color}>
