@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom"
 export const Home = () => {
   const navigate = useNavigate()
   const selectedSkin = trpc.shop.getSelectedSkin.useQuery()
+  const remainingScore = trpc.user.getRemainingScore.useQuery()
 
   trpc.user.updateData.useQuery(undefined, {
     staleTime: Number.POSITIVE_INFINITY,
@@ -31,7 +32,15 @@ export const Home = () => {
   return (
     <div className="h-full flex flex-col pb-safe-area-bottom">
       <Header />
-      <div className="flex-1 p-4 pt-0 flex flex-col gap-4">
+      <div className="flex-1 p-4 pt-0 flex flex-col gap-4 relative">
+        {mode === "classic" && (
+          <div className={"fixed w-full pt-3 left-0"}>
+            <p className="text-center text-sm font-medium opacity-50">
+              Вы получили {remainingScore.data?.creditedScore ?? 100}/100 баллов
+              сегодня
+            </p>
+          </div>
+        )}
         <div className="flex-1 -m-4 mb-0">
           <Game
             key={mode}
