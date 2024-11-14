@@ -126,10 +126,10 @@ export const Leaderboard = () => {
           ))}
         </div>
 
-        {leaderboard.data?.map((leader) => (
+        {leaderboard.data?.map((leader, i) => (
           <LeaderCard
             key={leader.id}
-            place={1}
+            place={i + 1}
             name={leader.displayName ?? ""}
             score={leader.score}
             avatarUrl={leader.avatarUrl}
