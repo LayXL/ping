@@ -1,6 +1,6 @@
 import { trpc } from "@/shared/utils/trpc.ts"
 import { GameModeSelect } from "@/widgets/game-mode-select"
-import bridge from "@vkontakte/vk-bridge"
+import bridge, { EAdsFormats } from "@vkontakte/vk-bridge"
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -53,6 +53,15 @@ export const GameWrapper = (props: GameWrapperProps) => {
               gameId: props.id,
               score,
             })
+          }
+
+          if (Math.random() < 0.5) {
+            bridge
+              .send("VKWebAppShowNativeAds", {
+                ad_format: EAdsFormats.INTERSTITIAL,
+              })
+              .then(() => {})
+              .catch(() => {})
           }
         }}
         withOffset={state === ScreenState.GAME}
