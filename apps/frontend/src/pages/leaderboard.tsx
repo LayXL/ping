@@ -92,22 +92,24 @@ export const Leaderboard = () => {
                 </div>
                 <p className={"text-xs text-primary/30"}>Начало лиги</p>
               </div>
-              <div className={"w-px bg-inversed/30 rounded-full"} />
               {(currentLeagueData?.to ?? 0) < 10000 && (
-                <div className={"flex flex-1 flex-col gap-0.5 items-center"}>
-                  <div className={"flex gap-1.5"}>
-                    <p
-                      className={"font-semibold text-lg"}
-                      children={currentLeagueData?.to}
-                    />
-                    <img
-                      src={"/icons/rank.svg"}
-                      alt={""}
-                      className={"cardShadow"}
-                    />
+                <>
+                  <div className={"w-px bg-inversed/30 rounded-full"} />
+                  <div className={"flex flex-1 flex-col gap-0.5 items-center"}>
+                    <div className={"flex gap-1.5"}>
+                      <p
+                        className={"font-semibold text-lg"}
+                        children={currentLeagueData?.to}
+                      />
+                      <img
+                        src={"/icons/rank.svg"}
+                        alt={""}
+                        className={"cardShadow"}
+                      />
+                    </div>
+                    <p className={"text-xs text-primary/30"}>Конец лиги</p>
                   </div>
-                  <p className={"text-xs text-primary/30"}>Конец лиги</p>
-                </div>
+                </>
               )}
             </div>
           </div>
